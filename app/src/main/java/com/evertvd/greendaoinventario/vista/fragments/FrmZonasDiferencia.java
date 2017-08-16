@@ -64,28 +64,7 @@ public class FrmZonasDiferencia extends Fragment {
 
 
         Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-        //List<Zona_has_Inventario> zona_has_inventario=AppController.getDaoSession().getZona_has_InventarioDao().loadAll();
-
-        List<Inventario> zona_has_inventario = Controller.getDaoSession().getInventarioDao().loadAll();
-
-        for (int i = 0; i < zona_has_inventario.size(); i++) {
-            Log.e("idInventario", String.valueOf(zona_has_inventario.get(i).getId()) + " ,estado; " + String.valueOf(zona_has_inventario.get(i).getEstado()));
-        }
-
-        Log.e("Inv Actual", String.valueOf(inventario.getId()));
-
-        QueryBuilder<Zona> queryBuilder = Controller.getDaoSession().getZonaDao().queryBuilder();
-        queryBuilder.join(Producto.class, ProductoDao.Properties.Zona_id).where(ProductoDao.Properties.Estado.eq(-1));
-        queryBuilder.join(Inventario.class, InventarioDao.Properties.Id);//where(new WhereCondition.StringCondition("J2.ESTADO=0 GROUP BY J1.ZONA_ID"));
-        //queryBuilder.join(Inventario.class, InventarioDao.Properties.Empresa_id).where(InventarioDao.Properties.Estado.eq(0));
-        //queryBuilder.join(Inventario.class,ProductoDao.Properties.Zona_id).where(new WhereCondition.StringCondition("J2._id="+inventario.getId()+ " AND J1.ESTADO=-1 GROUP BY J1.ZONA_ID"));
-        List<Zona> zonaList = queryBuilder.list();
-
-
-        //QueryBuilder<Producto> qb=AppController.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.eq(-1));
-        //qb.and(ProductoDao.Properties.Inventario_id.eq(inventario.getId()));
-
-        Query<Zona> query = Controller.getDaoSession().getZonaDao().queryRawCreate(", PRODUCTO P WHERE P.ZONA_ID=T._id");
+        Query<Zona> query = Controller.getDaoSession().getZonaDao().queryRawCreate(", PRODUCTO P WHERE P.ZONA_ID=T._id AND P.ESTADO<>0 AND P.INVENTARIO_ID="+inventario.getId() +" GROUP BY T._id");
         List<Zona> lista = query.list();
 
         /*
@@ -95,37 +74,14 @@ public class FrmZonasDiferencia extends Fragment {
 
         for (int i = 0; i < lista.size(); i++) {
             Log.e("colists", String.valueOf(lista.get(i).getNombre()));
-            Log.e("dsa", String.valueOf(lista.get(i).getEstado()));
+            Log.e("estado", String.valueOf(lista.get(i).getEstado()));
         }
 
-            /*
-        QueryBuilder<City> qb = cityDao.queryBuilder().where(Properties.Population.ge(1000000));
-        Join country = qb.join(Properties.CountryId, Country.class);
-        Join continent = qb.join(country, CountryDao.Properties.ContinentId,
-         Continent.class, ContinentDao.Properties.Id);
-        continent.where(ContinentDao.Properties.Name.eq("Europe"));
-        List<City> bigEuropeanCities = qb.list();
-         */
+        List<Producto> productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
 
+        for (int i = 0; i < productoList.size(); i++) {
+            Log.e("stock", String.valueOf(productoList.get(i).getStock())+" estado:"+productoList.get(i).getEstado());
 
-        //queryBuilder.join(Inventario.class, InventarioDao.Properties.Id).where(new WhereCondition.StringCondition("J1.INVENTARIO_ID="+inventario.getId()+ " GROUP BY ZONA_ID"));
-        //queryBuilder.join(Zona_has_Inventario.class, Zona_has_InventarioDao.Properties.Zona_id2).where(Zona_has_InventarioDao.Properties.Inventario_id2.eq(inventario.getId()));
-        //queryBuilder.join(Inventario.class, InventarioDao.Properties.Id).where(InventarioDao.Properties.Id.eq(inventario.getId()));
-        //queryBuilder.join(Producto.class, ProductoDao.Properties.Zona_id).where(new WhereCondition.StringCondition("J1.ESTADO=-1 GROUP BY ZONA_ID"));
-
-        //queryBuilder.join(Inventario.class, InventarioDao.Properties.Id).where(InventarioDao.Properties.Id.eq(inventario.getId()));
-
-
-        //List<Zona>zonaList1=AppController.getDaoSession().getZonaDao().queryBuilder().where(new WhereCondition.StringCondition(ZonaDao.Properties.Id.eq(1)+" GROUP BY Zona")).build().list();
-
-        //List<Conteo>conteos=AppController.getDaoSession().getConteoDao().queryBuilder().where(new WhereCondition.StringCondition(ConteoDao.Properties.Producto_id.eq(1)+" GROUP BY Producto_id")).list();
-        //List<Conteo>conteos2=AppController.getDaoSession().getConteoDao().queryBuilder().where(new WhereCondition.StringCondition("_id=1 GROUP BY PRODUCTO_ID")).build().list();
-
-        //List<Producto>productoList1=AppController.getDaoSession().getProductoDao().queryBuilder().where(new WhereCondition.StringCondition(ProductoDao.Properties.Zona_id.eq(1)+ " GROUP BY ZONA_ID")).build().list();
-
-
-        for (int i = 0; i < zonaList.size(); i++) {
-            Log.e("conteos", String.valueOf(zonaList.get(i).getNombre()));
         }
 
 

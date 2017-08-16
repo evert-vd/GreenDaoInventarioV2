@@ -161,14 +161,25 @@ public class DialogCierreInventario extends DialogFragment implements View.OnCli
 
     }
 
+    private List<Conteo> listarConteos(long idProducto){
+        List<Conteo> conteoList=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).list();
+        return conteoList;
+    }
+
     private void calcularDiferencias(){
+        //listar productos de inventario actual
+        //listar conteos de productos listados
         Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         List<Producto> productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
-        List<String> zonas=new ArrayList<>();
+
 
         for (int i=0; i<productoList.size();i++){
+
+            List<Conteo>conteoList=listarConteos(productoList.get(i).getId());
+
+
             int totalConteo=0;
-            List<Conteo>conteoList=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(productoList.get(i).getId())).list();
+            //List<Conteo>conteoList=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(productoList.get(i).getId())).list();
                 for (int j=0; j<conteoList.size();j++){
                     totalConteo+=conteoList.get(j).getCantidad();
                     //Log.e("totalConteo: ",String.valueOf(totalConteo));
@@ -184,7 +195,7 @@ public class DialogCierreInventario extends DialogFragment implements View.OnCli
             Log.e("esstadoProd: ",String.valueOf(productoList.get(i).getEstado()));
         }
 
-        List<Zona> zonaList=Controller.getDaoSession().getZonaDao().loadAll();
+
 
     }
 
