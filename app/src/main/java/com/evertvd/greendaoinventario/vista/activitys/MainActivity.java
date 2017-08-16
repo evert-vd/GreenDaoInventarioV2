@@ -66,6 +66,22 @@ public class MainActivity extends AppCompatActivity
         menuDiferencia = menuNav.findItem(R.id.nav_diferencias);
         menuResumen = menuNav.findItem(R.id.nav_resumen);
 
+        //verificar..esta devolviendo dos valores
+        List<Inventario> inventarioList=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).list();
+        long idUltimoInventario=0;
+        if(inventarioList.size()>1){
+          for (int i=0; i<inventarioList.size();i++){
+              Log.e("invab", String.valueOf(inventarioList.get(i).getId()));
+              Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(inventarioList.get(i).getId())).unique();
+              inventario.setEstado(1);
+              inventario.update();
+              idUltimoInventario=inventarioList.get(i).getId();
+          }
+            Log.e("idUltimo", String.valueOf(idUltimoInventario));
+         Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(idUltimoInventario)).unique();
+            inventario.setEstado(0);
+            inventario.update();
+        }
 
         inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         if (inventario != null) {

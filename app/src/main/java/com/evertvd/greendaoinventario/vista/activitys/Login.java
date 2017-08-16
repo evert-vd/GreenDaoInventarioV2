@@ -69,6 +69,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        try{
+
         if (v.getId() == R.id.txtNombreArchivo) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(this, FileInterno.class);
@@ -111,7 +113,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 Toast.makeText(this, "Ocurrió un error e el proceso", Toast.LENGTH_SHORT).show();
             }
         }
-
+        }catch (Exception e){
+            Log.e("ErrorCatch",e.toString());
+        }
     }
 
 
