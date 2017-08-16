@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".vista.activitys.Productos">
+
+    <item
+        android:id="@+id/action_buscar"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always|collapseActionView"
+        android:icon="@drawable/ic_menu_manage"
+        android:title="Buscar" />
+
+    <!--
+    <item android:id="@+id/action_qr"
+        android:title=""
+        android:icon="@drawable/ic_action_qr"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+-->
+
+
+</menu>
