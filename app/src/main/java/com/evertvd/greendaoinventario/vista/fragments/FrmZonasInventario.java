@@ -18,15 +18,13 @@ import android.widget.TextView;
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
 import com.evertvd.greendaoinventario.modelo.Inventario;
-import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.Zona_has_Inventario;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
-import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
 import com.evertvd.greendaoinventario.modelo.dao.Zona_has_InventarioDao;
-import com.evertvd.greendaoinventario.vista.activitys.Productos;
-import com.evertvd.greendaoinventario.vista.adapters.ZonasDiferenciaAdapter;
+import com.evertvd.greendaoinventario.vista.activitys.ProductoInv;
+import com.evertvd.greendaoinventario.vista.adapters.ZonasInvAdapter;
 import com.evertvd.greendaoinventario.vista.dialogs.DialogCierreInventario;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -110,7 +108,7 @@ public class FrmZonasInventario extends Fragment {
 
     public void iniciarlizarAdapter(final List<Zona> zonaList) {
 
-        ZonasDiferenciaAdapter adapter = new ZonasDiferenciaAdapter(getActivity(), zonaList);
+        ZonasInvAdapter adapter = new ZonasInvAdapter(getActivity(), zonaList);
         // C. Seleccionamos la lista de nuestro layout
 
         ListView miLista = (ListView) view.findViewById(R.id.listaZonas);
@@ -135,7 +133,7 @@ public class FrmZonasInventario extends Fragment {
                 nuevaZonaSeleccionada.setEstado(1);
                 nuevaZonaSeleccionada.update();
 
-                Intent intent = new Intent(getActivity(), Productos.class);
+                Intent intent = new Intent(getActivity(), ProductoInv.class);
                 startActivity(intent);
             }
         });

@@ -32,8 +32,9 @@ public class Zona_has_InventarioDao extends AbstractDao<Zona_has_Inventario, Voi
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Inventario_id2 = new Property(0, Long.class, "inventario_id2", false, "INVENTARIO_ID2");
-        public final static Property Zona_id2 = new Property(1, Long.class, "zona_id2", false, "ZONA_ID2");
+        public final static Property NombreZona = new Property(0, String.class, "nombreZona", false, "NOMBRE_ZONA");
+        public final static Property Inventario_id2 = new Property(1, Long.class, "inventario_id2", false, "INVENTARIO_ID2");
+        public final static Property Zona_id2 = new Property(2, Long.class, "zona_id2", false, "ZONA_ID2");
     }
 
     private DaoSession daoSession;
@@ -54,8 +55,9 @@ public class Zona_has_InventarioDao extends AbstractDao<Zona_has_Inventario, Voi
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"ZONA_HAS__INVENTARIO\" (" + //
-                "\"INVENTARIO_ID2\" INTEGER," + // 0: inventario_id2
-                "\"ZONA_ID2\" INTEGER);"); // 1: zona_id2
+                "\"NOMBRE_ZONA\" TEXT," + // 0: nombreZona
+                "\"INVENTARIO_ID2\" INTEGER," + // 1: inventario_id2
+                "\"ZONA_ID2\" INTEGER);"); // 2: zona_id2
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_ZONA_HAS__INVENTARIO_INVENTARIO_ID2 ON ZONA_HAS__INVENTARIO" +
                 " (\"INVENTARIO_ID2\");");
@@ -73,14 +75,19 @@ public class Zona_has_InventarioDao extends AbstractDao<Zona_has_Inventario, Voi
     protected final void bindValues(DatabaseStatement stmt, Zona_has_Inventario entity) {
         stmt.clearBindings();
  
+        String nombreZona = entity.getNombreZona();
+        if (nombreZona != null) {
+            stmt.bindString(1, nombreZona);
+        }
+ 
         Long inventario_id2 = entity.getInventario_id2();
         if (inventario_id2 != null) {
-            stmt.bindLong(1, inventario_id2);
+            stmt.bindLong(2, inventario_id2);
         }
  
         Long zona_id2 = entity.getZona_id2();
         if (zona_id2 != null) {
-            stmt.bindLong(2, zona_id2);
+            stmt.bindLong(3, zona_id2);
         }
     }
 
@@ -88,14 +95,19 @@ public class Zona_has_InventarioDao extends AbstractDao<Zona_has_Inventario, Voi
     protected final void bindValues(SQLiteStatement stmt, Zona_has_Inventario entity) {
         stmt.clearBindings();
  
+        String nombreZona = entity.getNombreZona();
+        if (nombreZona != null) {
+            stmt.bindString(1, nombreZona);
+        }
+ 
         Long inventario_id2 = entity.getInventario_id2();
         if (inventario_id2 != null) {
-            stmt.bindLong(1, inventario_id2);
+            stmt.bindLong(2, inventario_id2);
         }
  
         Long zona_id2 = entity.getZona_id2();
         if (zona_id2 != null) {
-            stmt.bindLong(2, zona_id2);
+            stmt.bindLong(3, zona_id2);
         }
     }
 
@@ -113,16 +125,18 @@ public class Zona_has_InventarioDao extends AbstractDao<Zona_has_Inventario, Voi
     @Override
     public Zona_has_Inventario readEntity(Cursor cursor, int offset) {
         Zona_has_Inventario entity = new Zona_has_Inventario( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // inventario_id2
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1) // zona_id2
+            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // nombreZona
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // inventario_id2
+            cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2) // zona_id2
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Zona_has_Inventario entity, int offset) {
-        entity.setInventario_id2(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setZona_id2(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setNombreZona(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
+        entity.setInventario_id2(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setZona_id2(cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2));
      }
     
     @Override

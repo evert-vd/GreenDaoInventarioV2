@@ -24,16 +24,29 @@
         </activity>
         <activity android:name=".vista.activitys.Login" />
         <activity android:name=".vista.activitys.FileInterno" />
-        <activity android:name=".vista.activitys.Productos">
+
+        <activity android:name=".vista.activitys.ProductoInv">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".vista.activitys.MainActivity" />
         </activity>
-        <activity android:name=".vista.activitys.Conteos">
+        <activity android:name=".vista.activitys.ProductoDif">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".vista.activitys.Productos" />
+                android:value=".vista.activitys.MainActivity" />
         </activity>
+
+        <activity android:name=".vista.activitys.ConteoInv">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".vista.activitys.ProductoInv" />
+        </activity>
+        <activity android:name=".vista.activitys.ConteoDif">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".vista.activitys.ProductoDif" />
+        </activity>
+
     </application>
 
 </manifest>

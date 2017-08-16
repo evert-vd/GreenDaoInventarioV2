@@ -92,7 +92,7 @@ public class Generator {
         inventario.addStringProperty("fecha");
         inventario.addIntProperty("estado");//0:abierto, 1:cerrado
         inventario.addIntProperty("contexto");//1 inventario, 2: diferencia, 3: resumen 0: terminado
-        Property empresaId = inventario.addLongProperty("empresa_id").index().getProperty();   // clave foránea
+        Property empresaId = inventario.addLongProperty("empresa_id").index().getProperty();// clave foránea
 
 
         Entity zona = schema.addEntity("Zona");
@@ -105,6 +105,7 @@ public class Generator {
 
         Entity zonaInventario=schema.addEntity("Zona_has_Inventario");
         //zona.addIdProperty().primaryKey().autoincrement();
+        zonaInventario.addStringProperty("nombreZona");
         Property inventarioId2 = zonaInventario.addLongProperty("inventario_id2").index().getProperty();   // clave foránea
         Property zonaId2 = zonaInventario.addLongProperty("zona_id2").index().getProperty();   // clave foránea
 
@@ -114,7 +115,7 @@ public class Generator {
         producto.addIntProperty("codigo");
         producto.addStringProperty("descripcion");
         producto.addDoubleProperty("stock");
-        producto.addStringProperty("tipo");
+        producto.addStringProperty("tipo");//origen del dato:sistema, app
         producto.addIntProperty("seleccionado");//1:seleccionado, 0:Deseleccionado
         producto.addIntProperty("estado");//-1:diferencia;abierto, 0:sin diferencia:cerrado
         Property inventarioId = producto.addLongProperty("inventario_id").index().getProperty();   // clave foránea

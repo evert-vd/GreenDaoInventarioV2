@@ -19,6 +19,7 @@ import com.evertvd.greendaoinventario.modelo.dao.Zona_has_InventarioDao;
  */
 @Entity(active = true)
 public class Zona_has_Inventario {
+    private String nombreZona;
 
     @Index
     private Long inventario_id2;
@@ -54,7 +55,8 @@ public class Zona_has_Inventario {
     }
 
     @Generated
-    public Zona_has_Inventario(Long inventario_id2, Long zona_id2) {
+    public Zona_has_Inventario(String nombreZona, Long inventario_id2, Long zona_id2) {
+        this.nombreZona = nombreZona;
         this.inventario_id2 = inventario_id2;
         this.zona_id2 = zona_id2;
     }
@@ -64,6 +66,14 @@ public class Zona_has_Inventario {
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getZona_has_InventarioDao() : null;
+    }
+
+    public String getNombreZona() {
+        return nombreZona;
+    }
+
+    public void setNombreZona(String nombreZona) {
+        this.nombreZona = nombreZona;
     }
 
     public Long getInventario_id2() {

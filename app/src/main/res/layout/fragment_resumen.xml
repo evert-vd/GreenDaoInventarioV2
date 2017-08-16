@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".vista.fragments.FrmResumen"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <RelativeLayout
+    android:layout_marginTop="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+
+        <TextView
+            android:id="@+id/txtResumenZona"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:textSize="15sp"
+            android:textAlignment="center"
+            android:text="resumen"/>
+
+
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="0dp">
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="10dp"
+               android:layout_marginLeft="20dp"
+               android:orientation="horizontal">
+
+
+
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:textSize="16dp"
+                   android:textColor="@color/cardview_dark_background"
+                   android:text="Zona"/>
+
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:textSize="16dp"
+                   android:textColor="@color/cardview_dark_background"
+                   android:layout_marginLeft="100dp"
+                   android:text="Cantidad"/>
+
+           </LinearLayout>
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="100dp"
+               android:orientation="vertical">
+               <ListView
+                   android:id="@+id/listaResumenZona"
+                   android:layout_marginTop="2dp"
+                   android:layout_marginLeft="20dp"
+                   android:layout_marginBottom="10dp"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent">
+               </ListView>
+           </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textColor="@color/cardview_dark_background"
+                    android:text="Total conteo"/>
+
+                <TextView
+                 android:id="@+id/txtTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="70dp"
+                    android:textSize="16dp"
+                    android:textColor="@color/cardview_dark_background"
+                android:text="0000"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="16dp"
+                    android:textColor="@color/cardview_dark_background"
+                    android:text="unidades"/>
+
+            </LinearLayout>
+
+           </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/txtResumenCodigo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="20dp"
+                android:textSize="15sp"
+                android:textAlignment="center"
+                android:text="resumen"/>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:orientation="horizontal">
+
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16dp"
+                            android:textColor="@color/cardview_dark_background"
+                            android:text="Código"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16dp"
+                            android:layout_marginLeft="80dp"
+                            android:textColor="@color/cardview_dark_background"
+                            android:text="Zona"/>
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="80dp"
+                            android:textSize="16dp"
+                            android:textColor="@color/cardview_dark_background"
+                            android:text="Cantidad (und)"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <ListView
+                            android:id="@+id/listaResumenCodigo"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                        </ListView>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+                </LinearLayout>
+
+
+
+
+<android.support.design.widget.FloatingActionButton
+    android:id="@+id/fabEmail"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+
+    android:layout_alignParentEnd="true"
+    app:useCompatPadding="true"
+    android:src="@drawable/ic_menu_send"
+
+    app:borderWidth="0dp"
+    app:elevation="6dp"/>
+
+</RelativeLayout>
+<!-- app:backgroundTint="@color/blue_darken_4"-->
+</LinearLayout>
+

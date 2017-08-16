@@ -14,23 +14,22 @@ import android.view.MenuItem;
 
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
-
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.Zona;
-
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
-import com.evertvd.greendaoinventario.vista.adapters.ProductosAdapter;
+import com.evertvd.greendaoinventario.vista.adapters.ProductosDifAdapter;
+import com.evertvd.greendaoinventario.vista.adapters.ProductosInvAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Productos extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class ProductoDif extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    ProductosAdapter adapter;
+    ProductosDifAdapter adapter;
     List<Producto> productoList;
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
@@ -44,12 +43,13 @@ public class Productos extends AppCompatActivity implements SearchView.OnQueryTe
         Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         //Log.e("zonaSeleccionada", String.valueOf(zonaSeleccionada.getZona()));
 
-        setTitle("Prod. en la zona " + zonaSeleccionada.getNombre());
+        setTitle("Dif. en la zona " + zonaSeleccionada.getNombre());
         //setSupportActionBar(myToolbar);
         //flecha en el actionbar para regresar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         productoList = Controller.getDaoSession().getProductoDao().queryBuilder()
+                .where(ProductoDao.Properties.Estado.eq(-1))
                 .where(ProductoDao.Properties.Zona_id.eq(zonaSeleccionada.getId()))
                 .where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
 
@@ -61,7 +61,7 @@ public class Productos extends AppCompatActivity implements SearchView.OnQueryTe
         recycler.setLayoutManager(lManager);
 
         // Crear un nuevo adaptador
-        adapter = new ProductosAdapter(productoList, this);
+        adapter = new ProductosDifAdapter(productoList, this);
         recycler.setAdapter(adapter);
         recycler.setItemAnimator(new DefaultItemAnimator());
 

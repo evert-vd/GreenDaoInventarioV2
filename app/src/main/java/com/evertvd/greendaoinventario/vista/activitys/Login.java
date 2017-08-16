@@ -256,6 +256,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             Zona_has_Inventario zona_has_inventario = new Zona_has_Inventario();
             zona_has_inventario.setZona_id2(zona.getId());
             zona_has_inventario.setInventario_id2(idInventario);
+            zona_has_inventario.setNombreZona(zona.getNombre());
             Controller.getDaoSession().getZona_has_InventarioDao().insert(zona_has_inventario);
         }
     }

@@ -17,7 +17,7 @@ import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
 import com.evertvd.greendaoinventario.modelo.interfaces.ItemClickListener;
-import com.evertvd.greendaoinventario.vista.activitys.Conteos;
+import com.evertvd.greendaoinventario.vista.activitys.ConteoInv;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +27,12 @@ import java.util.List;
  * Created by evertvd on 30/01/2017.
  */
 
-public class DiferenciasAdapter extends RecyclerView.Adapter<DiferenciasAdapter.ViewHolder> implements ItemClickListener {
+public class ProductosInvAdapter extends RecyclerView.Adapter<ProductosInvAdapter.ViewHolder> implements ItemClickListener {
 
     private Context contexto;
     private List<Producto> productoList;
 
-    public DiferenciasAdapter(List<Producto> productoList, Context contexto) {
+    public ProductosInvAdapter(List<Producto> productoList, Context contexto) {
         this.contexto = contexto;
         this.productoList = productoList;
     }
@@ -48,20 +48,20 @@ public class DiferenciasAdapter extends RecyclerView.Adapter<DiferenciasAdapter.
 
 
         //asignar estado cero a producto anterior selecionado
-        List<Producto> productoSeleccionadoAnterior = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.eq(1)).list();
+        List<Producto> productoSeleccionadoAnterior = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Seleccionado.eq(1)).list();
         if (!productoSeleccionadoAnterior.isEmpty()) {
             for (int i = 0; i < productoSeleccionadoAnterior.size(); i++) {
-                productoSeleccionadoAnterior.get(i).setEstado(0);
+                productoSeleccionadoAnterior.get(i).setSeleccionado(0);
                 productoSeleccionadoAnterior.get(i).update();
             }
         }
 
         //asignar estado uno al producto actual
         Producto productoSeleccionadoActual = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Id.eq(productoList.get(position).getId())).unique();
-        productoSeleccionadoActual.setEstado(1);
+        productoSeleccionadoActual.setSeleccionado(1);//producto seleccionado actual
         productoSeleccionadoActual.update();
 
-        Intent intent = new Intent(view.getContext(), Conteos.class);
+        Intent intent = new Intent(view.getContext(), ConteoInv.class);
         view.getContext().startActivity(intent);
     }
 
@@ -110,7 +110,7 @@ public class DiferenciasAdapter extends RecyclerView.Adapter<DiferenciasAdapter.
                                          int viewType) {
         // create a new view
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.adapter_producto, viewGroup, false);
+                .inflate(R.layout.adapter_producto_inv, viewGroup, false);
         // set the view's size, margins, paddings and layout parameters
         //...
         //ViewHolder vh = new ViewHolder(v);
@@ -136,7 +136,6 @@ public class DiferenciasAdapter extends RecyclerView.Adapter<DiferenciasAdapter.
             //holder.stock.setText(String.valueOf(items.get(position).getStock()));
             //holder.estado.setText(String.valueOf(items.get(position).getEstado()));
             //TextDrawable drawable = TextDrawable.builder().buildRect("A", Color.RED);
-
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage().toString());

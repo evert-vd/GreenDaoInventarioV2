@@ -20,15 +20,15 @@ import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
-import com.evertvd.greendaoinventario.vista.adapters.ConteosAdapter;
-import com.evertvd.greendaoinventario.vista.dialogs.RegistrarConteo;
+import com.evertvd.greendaoinventario.vista.adapters.ConteoInvAdapter;
+import com.evertvd.greendaoinventario.vista.dialogs.RegistrarConteoInv;
 import com.daimajia.swipe.util.Attributes;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class Conteos extends AppCompatActivity implements View.OnClickListener, RegistrarConteo.OnClickListener {
+public class ConteoInv extends AppCompatActivity implements View.OnClickListener, RegistrarConteoInv.OnClickListener {
 
     private Producto producto;
     private List<Conteo> conteoList;
@@ -51,12 +51,10 @@ public class Conteos extends AppCompatActivity implements View.OnClickListener, 
         //setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        producto = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.eq(1)).unique();//producto seleccionado
+        producto = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Seleccionado.eq(1)).unique();//producto seleccionado
         Zona zona = Controller.getDaoSession().getZonaDao().queryBuilder().where(ZonaDao.Properties.Id.eq(producto.getZona_id())).unique();
-        conteoList = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(producto.getId())).where(ConteoDao.Properties.Estado.notEq(-1)).list();
-        for (int i = 0; i < conteoList.size(); i++) {
-            Log.e("estado", String.valueOf(conteoList.get(i).getEstado()));
-        }
+        conteoList = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(producto.getId())).where(ConteoDao.Properties.Estado.notEq(-1)).list();//-1:conteos eliminado
+
 
         //Codigo del actionBar
         abCodigo = (TextView) findViewById(R.id.txtAbCodigo);
@@ -125,7 +123,7 @@ public class Conteos extends AppCompatActivity implements View.OnClickListener, 
     }
 
     public void abrirDialogo(View view) {
-        DialogFragment dialogFragment = new RegistrarConteo();
+        DialogFragment dialogFragment = new RegistrarConteoInv();
         dialogFragment.show(getFragmentManager(), "dialogoRegistrar");
     }
 
@@ -147,7 +145,7 @@ public class Conteos extends AppCompatActivity implements View.OnClickListener, 
         Date hoy = new Date();
         String horaRegistro = formato.format(hoy);
 
-        Producto producto = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.eq(1)).unique();
+        Producto producto = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Seleccionado.eq(1)).unique();//producto seleccionado
         Conteo conteo = new Conteo();
         conteo.setCantidad(unidadConteo);
         conteo.setFecharegistro(horaRegistro);
@@ -212,8 +210,8 @@ public class Conteos extends AppCompatActivity implements View.OnClickListener, 
 
         // Layout Managers:
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ConteosAdapter mAdapter = new ConteosAdapter(this, conteoList, producto.getId(), getFragmentManager());
-        ((ConteosAdapter) mAdapter).setMode(Attributes.Mode.Single);
+        ConteoInvAdapter mAdapter = new ConteoInvAdapter(this, conteoList, producto.getId(), getFragmentManager());
+        ((ConteoInvAdapter) mAdapter).setMode(Attributes.Mode.Single);
         mRecyclerView.setAdapter(mAdapter);
 
     }

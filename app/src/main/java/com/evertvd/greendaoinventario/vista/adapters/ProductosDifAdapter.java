@@ -17,7 +17,8 @@ import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
 import com.evertvd.greendaoinventario.modelo.interfaces.ItemClickListener;
-import com.evertvd.greendaoinventario.vista.activitys.Conteos;
+import com.evertvd.greendaoinventario.vista.activitys.ConteoDif;
+import com.evertvd.greendaoinventario.vista.activitys.ConteoInv;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +28,12 @@ import java.util.List;
  * Created by evertvd on 30/01/2017.
  */
 
-public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.ViewHolder> implements ItemClickListener {
+public class ProductosDifAdapter extends RecyclerView.Adapter<ProductosDifAdapter.ViewHolder> implements ItemClickListener {
 
     private Context contexto;
     private List<Producto> productoList;
 
-    public ProductosAdapter(List<Producto> productoList, Context contexto) {
+    public ProductosDifAdapter(List<Producto> productoList, Context contexto) {
         this.contexto = contexto;
         this.productoList = productoList;
     }
@@ -47,21 +48,21 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         //intent.putExtra("zona", items.get(position).getZona());
 
 
-        //asignar estado cero a producto anterior selecionado
-        List<Producto> productoSeleccionadoAnterior = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.eq(1)).list();
+        //Asignar estado cero a producto anterior selecionado
+        List<Producto> productoSeleccionadoAnterior = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Seleccionado.eq(1)).list();
         if (!productoSeleccionadoAnterior.isEmpty()) {
             for (int i = 0; i < productoSeleccionadoAnterior.size(); i++) {
-                productoSeleccionadoAnterior.get(i).setEstado(0);
+                productoSeleccionadoAnterior.get(i).setSeleccionado(0);//Seleccionado actual
                 productoSeleccionadoAnterior.get(i).update();
             }
         }
 
         //asignar estado uno al producto actual
         Producto productoSeleccionadoActual = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Id.eq(productoList.get(position).getId())).unique();
-        productoSeleccionadoActual.setEstado(1);
+        productoSeleccionadoActual.setSeleccionado(1);//producto seleccionado
         productoSeleccionadoActual.update();
 
-        Intent intent = new Intent(view.getContext(), Conteos.class);
+        Intent intent = new Intent(view.getContext(), ConteoDif.class);
         view.getContext().startActivity(intent);
     }
 
@@ -110,7 +111,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
                                          int viewType) {
         // create a new view
         View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.adapter_producto, viewGroup, false);
+                .inflate(R.layout.adapter_producto_inv, viewGroup, false);
         // set the view's size, margins, paddings and layout parameters
         //...
         //ViewHolder vh = new ViewHolder(v);
@@ -130,12 +131,13 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
             holder.descripcion.setText(productoList.get(position).getDescripcion());
             List<Zona> zonaList = Controller.getDaoSession().getZonaDao().queryBuilder().where(ZonaDao.Properties.Id.eq(productoList.get(position).getZona_id())).list();
             holder.zona.setText(zonaList.get(0).getNombre());
-            holder.cantidad.setText(String.valueOf(productoList.get(position).getStock()));
+            holder.cantidad.setText(String.valueOf(productoList.get(position).getStock())+" estado:"+String.valueOf(productoList.get(position).getEstado()));
 
             //METODOS DE PRUEBA
             //holder.stock.setText(String.valueOf(items.get(position).getStock()));
             //holder.estado.setText(String.valueOf(items.get(position).getEstado()));
             //TextDrawable drawable = TextDrawable.builder().buildRect("A", Color.RED);
+
 
         } catch (Exception e) {
             Log.e("Error", e.getMessage().toString());
@@ -160,6 +162,5 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         notifyDataSetChanged();
 
     }
-
 
 }

@@ -4,6 +4,7 @@ package com.evertvd.greendaoinventario.vista.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,11 +24,13 @@ import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
-import com.evertvd.greendaoinventario.vista.activitys.Productos;
-import com.evertvd.greendaoinventario.vista.adapters.ZonasDiferenciaAdapter;
+import com.evertvd.greendaoinventario.vista.activitys.ProductoDif;
+import com.evertvd.greendaoinventario.vista.activitys.ProductoInv;
+import com.evertvd.greendaoinventario.vista.adapters.ZonasDifAdapter;
+import com.evertvd.greendaoinventario.vista.dialogs.DialogCierreDiferencia;
+import com.evertvd.greendaoinventario.vista.dialogs.DialogCierreInventario;
 
 import org.greenrobot.greendao.query.Query;
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.List;
 
@@ -101,14 +104,13 @@ public class FrmZonasDiferencia extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            case R.id.action_inventario:
+            case R.id.action_diferencia:
                 //mostrarProceso()
-                /*
-                android.support.v4.app.FragmentManager fragmentManager=getFragmentManager();
-                DialogCierreInventario dialogCierreInventario = new DialogCierreInventario();
-                dialogCierreInventario.setCancelable(false);
-                dialogCierreInventario.show(fragmentManager, "dialogo cerrar inventario");
-                */
+                FragmentManager fragmentManager = getFragmentManager();
+                //FragmentManager fragmentManager=getFragmentManager();
+                DialogCierreDiferencia dialogCierreDiferencia = new DialogCierreDiferencia();
+                dialogCierreDiferencia.setCancelable(false);
+                dialogCierreDiferencia.show(fragmentManager, "dialogo cerrar diferencias");
                 return true;
 
 
@@ -120,13 +122,12 @@ public class FrmZonasDiferencia extends Fragment {
 
     public void iniciarlizarAdapter(final List<Zona> zonaList) {
 
-        ZonasDiferenciaAdapter adapter = new ZonasDiferenciaAdapter(getActivity(), zonaList);
+        ZonasDifAdapter adapter = new ZonasDifAdapter(getActivity(), zonaList);
         // C. Seleccionamos la lista de nuestro layout
 
         ListView listaZonas = (ListView) view.findViewById(R.id.listaZonas);
         listaZonas.setVisibility(View.VISIBLE);
         listaZonas.setAdapter(adapter);
-
 
         listaZonas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -145,7 +146,7 @@ public class FrmZonasDiferencia extends Fragment {
                 nuevaZonaSeleccionada.setEstado(1);
                 nuevaZonaSeleccionada.update();
 
-                Intent intent = new Intent(getActivity(), Productos.class);
+                Intent intent = new Intent(getActivity(), ProductoDif.class);
                 startActivity(intent);
             }
         });

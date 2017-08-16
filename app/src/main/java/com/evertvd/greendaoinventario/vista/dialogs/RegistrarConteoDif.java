@@ -19,8 +19,8 @@ import com.evertvd.greendaoinventario.R;
 /**
  * Fragmento con un diálogo personalizado
  */
-public class RegistrarConteo extends DialogFragment implements View.OnClickListener {
-    private static final String TAG = RegistrarConteo.class.getSimpleName();
+public class RegistrarConteoDif extends DialogFragment implements View.OnClickListener {
+    private static final String TAG = RegistrarConteoDif.class.getSimpleName();
     private int cantidadIngresada;
     private Button btnAceptar, btnCancelar;
     private EditText txtCantidad, txtObservacion;
@@ -34,7 +34,7 @@ public class RegistrarConteo extends DialogFragment implements View.OnClickListe
         void onInputDialog(int conteo, String observacion);
     }
 
-    public RegistrarConteo() {
+    public RegistrarConteoDif() {
         //this.idProducto=idProducto;
     }
 
@@ -80,7 +80,7 @@ public class RegistrarConteo extends DialogFragment implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.btnAceptar) {
             if (validarCantidad(tilCantidad.getEditText().getText().toString())) {
-                RegistrarConteo.OnClickListener activity = (RegistrarConteo.OnClickListener) getActivity();
+                RegistrarConteoDif.OnClickListener activity = (RegistrarConteoDif.OnClickListener) getActivity();
                 activity.onInputDialog(Integer.parseInt(tilCantidad.getEditText().getText().toString()), tilObservacion.getEditText().getText().toString());
                 this.dismiss();
             }

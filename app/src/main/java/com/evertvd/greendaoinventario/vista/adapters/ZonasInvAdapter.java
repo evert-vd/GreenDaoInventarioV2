@@ -23,13 +23,13 @@ import java.util.List;
  * Created by evertvd on 17/05/2017.
  */
 
-public class ZonasInventarioAdapter extends BaseAdapter {
+public class ZonasInvAdapter extends BaseAdapter {
 
 
     protected Context context;
     protected List<Zona> zonaList;
 
-    public ZonasInventarioAdapter(Context context, List<Zona> zonaList) {
+    public ZonasInvAdapter(Context context, List<Zona> zonaList) {
         this.context = context;
         this.zonaList = zonaList;
     }

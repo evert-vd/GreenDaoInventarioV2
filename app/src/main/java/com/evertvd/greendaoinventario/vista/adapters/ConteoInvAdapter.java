@@ -4,6 +4,7 @@ package com.evertvd.greendaoinventario.vista.adapters;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -22,16 +23,17 @@ import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Historial;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.HistorialDao;
-import com.evertvd.greendaoinventario.vista.activitys.Conteos;
+import com.evertvd.greendaoinventario.vista.activitys.ConteoInv;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
+import com.evertvd.greendaoinventario.vista.dialogs.DialogHistorialConteo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 
-public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleViewHolder> {
+public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.SimpleViewHolder> {
     TextView abCantidad;
     EditText txtCantidad;
     EditText txtObservacion;
@@ -42,19 +44,19 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
     private long idProducto;
     private Context mContext;
     FragmentManager fragmentManager;
-    Conteos listener;
+    ConteoInv listener;
     //Activity activity;
     View view;
     private List<Conteo> conteoList;
 
-    public ConteosAdapter(Context context, List<Conteo> conteoList, long idProducto) {
+    public ConteoInvAdapter(Context context, List<Conteo> conteoList, long idProducto) {
         this.mContext = context;
         this.conteoList = conteoList;
         this.idProducto = idProducto;
 
     }
 
-    public ConteosAdapter(Context context, List<Conteo> conteoList, long idProducto, FragmentManager fragmentManager) {
+    public ConteoInvAdapter(Context context, List<Conteo> conteoList, long idProducto, FragmentManager fragmentManager) {
         this.mContext = context;
         this.conteoList = conteoList;
         this.idProducto = idProducto;
@@ -63,7 +65,7 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
 
     @Override
     public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_conteo_producto, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_conteo_inv, parent, false);
         return new SimpleViewHolder(view);
     }
 
@@ -138,13 +140,13 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
                     Log.e("Hisotiral", String.valueOf(historialList.get(i).getCantidad()) + " estado:" + String.valueOf(historialList.get(i).getTipo()));
                 }
 
-                /*
-                IHistorial iHistorial=new Sqlite_Historial();
-                List<BeanHistorial> historialList=iHistorial.obtenerHistorial(mContext, listaDetalle.get(position).getIdconteo());
+
+                //IHistorial iHistorial=new Sqlite_Historial();
+                //List<BeanHistorial> historialList=iHistorial.obtenerHistorial(mContext, listaDetalle.get(position).getIdconteo());
                 if(fragmentManager!=null){
-                    DialogHistorial historial = new DialogHistorial();
+                    DialogHistorialConteo historial = new DialogHistorialConteo();
                     Bundle data = new Bundle();
-                    data.putInt("idconteo", listaDetalle.get(position).getIdconteo());
+                    data.putLong("idconteo", conteoList.get(position).getId());
                     historial.setArguments(data);
                     //historial.setCancelable(false);
                     historial.show(fragmentManager, "dialogo historial");
@@ -153,9 +155,6 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
                     Snackbar.make(v, "Sin historial", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                 }
-
-
-            */
 
             }
         });
@@ -196,7 +195,7 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
                                 notifyItemRemoved(position);
                                 notifyItemRangeChanged(position, conteoList.size());
 
-                                Conteos conteos = new Conteos();
+                                ConteoInv conteos = new ConteoInv();
                                 List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
                                 int nuevoTotal = 0;
                                 for (int i = 0; i < listarNuevoTotal.size(); i++) {
@@ -268,11 +267,11 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
 
                         //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
                         //por default la lista historial contiene 1 registro (el registro actual)
-                        List<Historial> historialList = Controller.getDaoSession().getHistorialDao().loadAll();
-                        if (historialList.size() <= 1) {
-                            historial.setTipo(0);//una modificacion
+                        List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
+                        if (historialList.isEmpty() || historialList.size()== 1) {
+                            historial.setTipo(1);//una modificacion
                         } else {
-                            historial.setTipo(1);//mas de una modificacion
+                            historial.setTipo(2);//mas de una modificacion
                         }
 
                         Controller.getDaoSession().insert(historial);
@@ -292,7 +291,7 @@ public class ConteosAdapter extends RecyclerSwipeAdapter<ConteosAdapter.SimpleVi
                             viewHolder.lblFechaRegistro.setText(fechaActual());
 
                             //Actualizacion totalConteo ActionBar
-                            Conteos conteos = new Conteos();
+                            ConteoInv conteos = new ConteoInv();
                             List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
                             int nuevoTotal = 0;
                             for (int i = 0; i < listarNuevoTotal.size(); i++) {

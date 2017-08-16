@@ -14,21 +14,23 @@ import android.view.MenuItem;
 
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
+
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.Zona;
+
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
-import com.evertvd.greendaoinventario.vista.adapters.ProductosAdapter;
+import com.evertvd.greendaoinventario.vista.adapters.ProductosInvAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ProductosDiferencia extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class ProductoInv extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    ProductosAdapter adapter;
+    ProductosInvAdapter adapter;
     List<Producto> productoList;
     private RecyclerView recycler;
     private RecyclerView.LayoutManager lManager;
@@ -48,10 +50,12 @@ public class ProductosDiferencia extends AppCompatActivity implements SearchView
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         productoList = Controller.getDaoSession().getProductoDao().queryBuilder()
-                .where(ProductoDao.Properties.Estado.eq(-1))
                 .where(ProductoDao.Properties.Zona_id.eq(zonaSeleccionada.getId()))
                 .where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
 
+        for(int i=0; i<productoList.size();i++){
+            Log.e("Cod",String.valueOf(productoList.get(i).getStock())+" Estado:"+String.valueOf(productoList.get(i).getEstado()));
+        }
 
         recycler = (RecyclerView) findViewById(R.id.listadoProductos);
         recycler.setHasFixedSize(true);
@@ -60,7 +64,7 @@ public class ProductosDiferencia extends AppCompatActivity implements SearchView
         recycler.setLayoutManager(lManager);
 
         // Crear un nuevo adaptador
-        adapter = new ProductosAdapter(productoList, this);
+        adapter = new ProductosInvAdapter(productoList, this);
         recycler.setAdapter(adapter);
         recycler.setItemAnimator(new DefaultItemAnimator());
 

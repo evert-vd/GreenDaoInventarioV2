@@ -5,7 +5,7 @@
     android:id="@+id/activity_conteos"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.evertvd.greendaoinventario.vista.activitys.Conteos">
+    tools:context="com.evertvd.greendaoinventario.vista.activitys.ConteoInv">
 
     <!--
     <include layout="@layout/toolbar_principal"/>

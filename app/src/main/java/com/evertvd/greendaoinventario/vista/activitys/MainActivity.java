@@ -24,6 +24,7 @@ import com.evertvd.greendaoinventario.controlador.Controller;
 import com.evertvd.greendaoinventario.modelo.Empresa;
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
+import com.evertvd.greendaoinventario.vista.fragments.FrmResumen;
 import com.evertvd.greendaoinventario.vista.fragments.FrmZonasDiferencia;
 import com.evertvd.greendaoinventario.vista.fragments.FrmZonasInventario;
 
@@ -168,7 +169,11 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.commit();
 
         } else if (id == R.id.nav_resumen) {
-
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            FrmResumen frmResumen = new FrmResumen();
+            fragmentTransaction.replace(R.id.contenedor, frmResumen);
+            fragmentTransaction.commit();
 
         } else if (id == R.id.nav_pruebas) {
             /*
