@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 
 import com.evertvd.greendaoinventario.R;
@@ -24,6 +25,7 @@ import com.evertvd.greendaoinventario.controlador.Controller;
 import com.evertvd.greendaoinventario.modelo.Empresa;
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
+import com.evertvd.greendaoinventario.vista.fragments.FrmNuevoProducto;
 import com.evertvd.greendaoinventario.vista.fragments.FrmResumen;
 import com.evertvd.greendaoinventario.vista.fragments.FrmZonasDiferencia;
 import com.evertvd.greendaoinventario.vista.fragments.FrmZonasInventario;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -68,19 +72,21 @@ public class MainActivity extends AppCompatActivity
 
         //verificar..esta devolviendo dos valores
         List<Inventario> inventarioList=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).list();
-        long idUltimoInventario=0;
+        //long idUltimoInventario=0;
         if(inventarioList.size()>1){
-          for (int i=0; i<inventarioList.size();i++){
-              Log.e("invab", String.valueOf(inventarioList.get(i).getId()));
+            //cierra todos los inventarios menos el ultimo
+          for (int i=0; i<inventarioList.size()-1;i++){
               Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(inventarioList.get(i).getId())).unique();
               inventario.setEstado(1);
               inventario.update();
-              idUltimoInventario=inventarioList.get(i).getId();
+
+              //idUltimoInventario=inventarioList.get(i).getId();
           }
+            /*
             Log.e("idUltimo", String.valueOf(idUltimoInventario));
          Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(idUltimoInventario)).unique();
             inventario.setEstado(0);
-            inventario.update();
+            inventario.update();*/
         }
 
         inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
@@ -169,29 +175,53 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        switch (id) {
+            case R.id.nav_inventario:
+                //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                FrmZonasInventario frmZonas = new FrmZonasInventario();
+                fragmentTransaction.replace(R.id.contenedor, frmZonas);
+                fragmentTransaction.commit();
+                break;
 
-        if (id == R.id.nav_inventario) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            FrmZonasInventario frmZonas = new FrmZonasInventario();
-            fragmentTransaction.replace(R.id.contenedor, frmZonas);
-            fragmentTransaction.commit();
-
-        } else if (id == R.id.nav_diferencias) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+       // } else if (id == R.id.nav_diferencias) {
+            case R.id.nav_diferencias:
+            //FragmentManager fragmentManager = getFragmentManager();
+            //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
             fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
             fragmentTransaction.commit();
+                break;
 
-        } else if (id == R.id.nav_resumen) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        //} else if (id == R.id.nav_resumen) {
+            case R.id.nav_resumen:
+            //FragmentManager fragmentManager = getSupportFragmentManager();
+            //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             FrmResumen frmResumen = new FrmResumen();
             fragmentTransaction.replace(R.id.contenedor, frmResumen);
             fragmentTransaction.commit();
 
-        } else if (id == R.id.nav_pruebas) {
+            case R.id.nav_nuevo_Producto:
+
+                FrmNuevoProducto listarNuevo = new FrmNuevoProducto();
+                //Reemplazar el fragment actual por el nuevo fragment
+                fragmentTransaction.replace(R.id.contenedor, listarNuevo);
+                //Animacion al abrir el nuevo fragment
+                fragmentTransaction.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+
+                //Regresa al fragment anterior con la tecla atras
+                //transaction.addToBackStack(null);
+                //getSupportActionBar().setTitle(menuItem.getTitle());
+                fragmentTransaction.commit();
+                break;
+
+            //}
+
+
+            //break;
+
+
             /*
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -201,15 +231,17 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.contenedor, fragment);
             fragmentTransaction.commit();
             */
-        } else if (id == R.id.nav_iniciarSesion) {
+        //} else if (id == R.id.nav_iniciarSesion) {
+            case R.id.nav_iniciarSesion:
+            break;
+            case R.id.nav_cerrarSesion:
 
-
-        } else if (id == R.id.nav_cerrarSesion) {
+       // } else if (id == R.id.nav_cerrarSesion) {
             Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
             Log.e("Inventario actual", String.valueOf(inventario.getId()));
             Controller.getDaoSession().getInventarioDao().delete(inventario);
             startActivity(new Intent(this, Login.class));
-
+            break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -218,7 +250,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void abrirContextoInventario() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
@@ -229,7 +261,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void abrirContextoDiferencias() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
         fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
@@ -237,7 +269,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void abrirContextoResumen() {
-
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        FrmResumen frmResumen = new FrmResumen();
+        fragmentTransaction.replace(R.id.contenedor, frmResumen);
+        fragmentTransaction.commit();
     }
 
     private void agregarEmpresas() {

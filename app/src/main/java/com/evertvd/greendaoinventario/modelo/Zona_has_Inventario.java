@@ -180,6 +180,12 @@ public class Zona_has_Inventario {
     }
 
     // KEEP METHODS - put your custom methods here
+
+    @Override
+    public String toString() {
+        return nombreZona.toString();
+    }
+
     // KEEP METHODS END
 
 }

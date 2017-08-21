@@ -142,7 +142,7 @@ public class Generator {
         historial.addStringProperty("observacion");
         historial.addStringProperty("fecharegistro");
         historial.addStringProperty("fechamodificacion");
-        historial.addIntProperty("tipo");
+        historial.addIntProperty("tipo");//1:inicial, 2: modificacion, -1:eliminacion
         Property conteoId = historial.addLongProperty("conteo_id").index().getProperty();   // clave foránea
         //Property conteoProductoId = historial.addLongProperty("conteo_producto_id").index().getProperty();   // clave foránea
         //Property conteoProductoZonaId = historial.addLongProperty("conteo_producto_zona_id").index().getProperty();   // clave foránea

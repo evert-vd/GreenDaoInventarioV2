@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
@@ -90,11 +91,13 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
             @Override
             public void onClose(SwipeLayout layout) {
                 //when the SurfaceView totally cover the BottomView.
+
             }
 
             @Override
             public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
                 //you are swiping.
+
             }
 
             @Override
@@ -105,6 +108,7 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
             @Override
             public void onOpen(SwipeLayout layout) {
                 //when the BottomView totally show.
+                //Toast.makeText(mContext,"onClose",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -163,8 +167,6 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
         viewHolder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-
-
                 final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle("Eliminar Registro");
                 builder.setCancelable(false);
@@ -176,8 +178,8 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                             public void onClick(DialogInterface dialog, int which) {
                                 //1:Obtencion del conteo a eliminar
                                 Conteo conteoAEliminar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
-                                //2:Guardar en el historial del conteo eliminado
 
+                                //2:Guardar en el historial del conteo eliminado
                                 Historial historial = new Historial();
                                 historial.setConteo_id(conteoAEliminar.getId());
                                 historial.setCantidad(conteoAEliminar.getCantidad());
@@ -186,9 +188,9 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                                 historial.setFechamodificacion(fechaActual());
                                 historial.setTipo(-1);//eliminacion
                                 //eliminacion
-                                Controller.getDaoSession().insert(historial);
+                                Controller.getDaoSession().getHistorialDao().insert(historial);
                                 conteoAEliminar.setEstado(-1);
-                                Controller.getDaoSession().update(conteoAEliminar);
+                                Controller.getDaoSession().getConteoDao().update(conteoAEliminar);
 
                                 mItemManger.removeShownLayouts(viewHolder.swipeLayout);
                                 conteoList.remove(position);
@@ -219,8 +221,6 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                             }
                         });
                 builder.show();
-
-
             }
 
         });
@@ -228,8 +228,6 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
         viewHolder.btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-
-
                 AlertDialog.Builder dialogModificar = new AlertDialog.Builder(mContext);
                 LayoutInflater inflater = LayoutInflater.from(mContext);
                 View v = inflater.inflate(R.layout.dialogo_modificar_conteo, null);
@@ -246,11 +244,11 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
 
                 //final IConteo iConteo=new Sqlite_Conteo();
                 //1: captura conteo original
-                final Conteo conteo = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                final Conteo conteoAModificar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
                 //final BeanConteo conteoOriginal=iConteo.obtenerConteo(mContext, listaDetalle.get(position).getIdconteo());
-                txtCantidad.setText(String.valueOf(conteo.getCantidad()));
+                txtCantidad.setText(String.valueOf(conteoAModificar.getCantidad()));
                 txtCantidad.setSelection(txtCantidad.getText().length());//poner cursor al final
-                txtObservacion.setText(conteo.getObservacion());
+                txtObservacion.setText(conteoAModificar.getObservacion());
 
                 dialogModificar.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
@@ -259,23 +257,22 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
 
                         //Log.e("cantidad modificada", String.valueOf(conteoOriginal.getConteo()+" "+conteoOriginal.getObservacion()));
                         Historial historial = new Historial();
-                        historial.setCantidad(conteo.getCantidad());
-                        historial.setConteo_id(conteo.getId());
+                        historial.setCantidad(conteoAModificar.getCantidad());
+                        historial.setConteo_id(conteoAModificar.getId());
                         historial.setFechamodificacion(fechaActual());
-                        historial.setFecharegistro(conteo.getFecharegistro());
-                        historial.setObservacion(conteo.getObservacion());
+                        historial.setFecharegistro(conteoAModificar.getFecharegistro());
+                        historial.setObservacion(conteoAModificar.getObservacion());
 
                         //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
                         //por default la lista historial contiene 1 registro (el registro actual)
                         List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
-                        if (historialList.isEmpty() || historialList.size()== 1) {
+                        if (historialList.isEmpty()) {
                             historial.setTipo(1);//una modificacion
                         } else {
                             historial.setTipo(2);//mas de una modificacion
                         }
 
-                        Controller.getDaoSession().insert(historial);
-
+                        Controller.getDaoSession().getHistorialDao().insert(historial);
                         //3:guardar objeto nuevo en tabla conteo
                         if (validarCantidad(tilCantidad.getEditText().getText().toString())) {
                             Conteo conteoAEditar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
@@ -283,7 +280,7 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                             conteoAEditar.setObservacion(txtObservacion.getText().toString());
                             conteoAEditar.setFecharegistro(fechaActual());
                             conteoAEditar.setEstado(1);//modificacion
-                            Controller.getDaoSession().update(conteoAEditar);
+                            Controller.getDaoSession().getConteoDao().update(conteoAEditar);
 
                             //4:actualizacion de la vista
 
@@ -298,7 +295,6 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                                 nuevoTotal += listarNuevoTotal.get(i).getCantidad();
                             }
                             conteos.actualizarConteoActionBar(nuevoTotal);
-
                             dialog.dismiss();
                             Snackbar.make(view, "Conteo modificado", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();

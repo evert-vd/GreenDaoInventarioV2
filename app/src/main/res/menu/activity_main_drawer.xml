@@ -16,9 +16,9 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Resumen" />
         <item
-            android:id="@+id/nav_pruebas"
+            android:id="@+id/nav_nuevo_Producto"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Pruebas" />
+            android:title="Registrar Producto" />
     </group>
 
     <item android:title="Communicate">

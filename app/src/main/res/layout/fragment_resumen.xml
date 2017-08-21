@@ -8,40 +8,34 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <RelativeLayout
-    android:layout_marginTop="10dp"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:weightSum="3"
             android:orientation="vertical">
-
-
-
-        <TextView
-            android:id="@+id/txtResumenZona"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:textSize="15sp"
-            android:textAlignment="center"
-            android:text="resumen"/>
-
-
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:elevation="0dp">
 
            <LinearLayout
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:orientation="vertical">
+
+               <TextView
+                   android:id="@+id/txtResumenZona"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:textSize="15sp"
+                   android:textAlignment="center"
+                   android:layout_marginTop="3dp"
+                   android:text="resumen"/>
 
            <LinearLayout
                android:layout_width="match_parent"
@@ -117,26 +111,28 @@
            </LinearLayout>
         </android.support.v7.widget.CardView>
 
-
-            <TextView
-                android:id="@+id/txtResumenCodigo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_marginTop="20dp"
-                android:textSize="15sp"
-                android:textAlignment="center"
-                android:text="resumen"/>
-
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:elevation="0dp">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/txtResumenCodigo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="2dp"
+                        android:textSize="15sp"
+                        android:textAlignment="center"
+                        android:text="resumen"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -177,13 +173,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtSinCodigos"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:textSize="15sp"
+                            android:gravity="center"
+                            android:text="Inventario Ok: Ningun código con diferencia"/>
                         <ListView
                             android:id="@+id/listaResumenCodigo"
                             android:layout_marginTop="2dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginBottom="10dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent">
                         </ListView>
                     </LinearLayout>
 
@@ -193,23 +198,17 @@
                 </LinearLayout>
 
 
-
-
 <android.support.design.widget.FloatingActionButton
     android:id="@+id/fabEmail"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:layout_alignParentRight="true"
-
     android:layout_alignParentEnd="true"
     app:useCompatPadding="true"
-    android:src="@drawable/ic_menu_send"
+    android:src="@drawable/ic_menu_send" />
 
-    app:borderWidth="0dp"
-    app:elevation="6dp"/>
-
-</RelativeLayout>
 <!-- app:backgroundTint="@color/blue_darken_4"-->
+</RelativeLayout>
 </LinearLayout>
 

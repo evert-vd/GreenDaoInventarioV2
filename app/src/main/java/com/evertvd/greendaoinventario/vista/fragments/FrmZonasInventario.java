@@ -2,8 +2,8 @@ package com.evertvd.greendaoinventario.vista.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,15 +63,9 @@ public class FrmZonasInventario extends Fragment {
         }
 
         Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-
         QueryBuilder<Zona> queryBuilder = Controller.getDaoSession().getZonaDao().queryBuilder();
         queryBuilder.join(Zona_has_Inventario.class, Zona_has_InventarioDao.Properties.Zona_id2).where(Zona_has_InventarioDao.Properties.Inventario_id2.eq(inventario.getId()));
         List<Zona> zonaList = queryBuilder.list();
-
-
-        for (int i = 0; i < zonaList.size(); i++) {
-            Log.e("zona", String.valueOf(zonaList.get(i).getId()));
-        }
 
         iniciarlizarAdapter(zonaList);
 
@@ -89,10 +83,7 @@ public class FrmZonasInventario extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.action_inventario:
-                //mostrarProceso()
-
                 FragmentManager fragmentManager = getFragmentManager();
-                //FragmentManager fragmentManager=getFragmentManager();
                 DialogCierreInventario dialogCierreInventario = new DialogCierreInventario();
                 dialogCierreInventario.setCancelable(false);
                 dialogCierreInventario.show(fragmentManager, "dialogo cerrar inventario");

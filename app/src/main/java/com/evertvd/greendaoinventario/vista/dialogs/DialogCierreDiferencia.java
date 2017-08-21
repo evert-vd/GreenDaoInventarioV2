@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -161,7 +161,8 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
     }
 
     private List<Conteo> listarConteos(long idProducto){
-        List<Conteo> conteoList=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).list();
+        List<Conteo> conteoList=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto))
+                .where(ConteoDao.Properties.Estado.notEq(-1)).list();//evitar los registros eliminados;
         return conteoList;
     }
 

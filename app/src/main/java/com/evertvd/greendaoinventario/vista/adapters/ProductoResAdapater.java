@@ -92,7 +92,7 @@ public class ProductoResAdapater extends BaseAdapter {
 
         zona.setText(zona_has_inventario.getNombreZona());
         codigo.setText(String.valueOf(productoList.get(position).getCodigo()));
-        cantidad.setText(String.valueOf(Operaciones.totalConteoProducto(productoList.get(position).getId())));
+        cantidad.setText(String.valueOf(Operaciones.totalConteoProducto1(productoList.get(position).getId())));
 
         return v;
     }

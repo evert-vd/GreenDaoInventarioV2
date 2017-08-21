@@ -42,11 +42,11 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
     TextInputLayout tilCantidad;
     TextInputLayout tilObservacion;
 
-    private String historialInicial;
+
     private long idProducto;
     private Context mContext;
     FragmentManager fragmentManager;
-    ConteoInv listener;
+    private int validado;
     //Activity activity;
     View view;
     private List<Conteo> conteoList;
@@ -55,7 +55,6 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
         this.mContext = context;
         this.conteoList = conteoList;
         this.idProducto = idProducto;
-
     }
 
     public ConteoDifAdapter(Context context, List<Conteo> conteoList, long idProducto, FragmentManager fragmentManager) {
@@ -67,7 +66,7 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
 
     @Override
     public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_conteo_inv, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_conteo_dif, parent, false);
         return new SimpleViewHolder(view);
     }
 
@@ -77,7 +76,14 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
 
         viewHolder.lblCantidad.setText(String.valueOf(conteoList.get(position).getCantidad()));
         viewHolder.lblFechaRegistro.setText(String.valueOf(conteoList.get(position).getFecharegistro()));
+
         //viewHolder.lblFechaRegistro.setText("00:00:00");
+
+        if(conteoList.get(position).getEstado()!=1){
+            viewHolder.lblEstado.setText("Por Validar");
+        }else{
+            viewHolder.lblEstado.setText("Validado");
+        }
 
         viewHolder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
         // Drag From Left
@@ -139,7 +145,7 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
             public void onClick(View v) {
                 List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
                 for (int i = 0; i < historialList.size(); i++) {
-                    Log.e("Hisotiral", String.valueOf(historialList.get(i).getCantidad()) + " estado:" + String.valueOf(historialList.get(i).getTipo()));
+                    Log.e("Historial", String.valueOf(historialList.get(i).getCantidad()) + " estado:" + String.valueOf(historialList.get(i).getTipo()));
                 }
 
 
@@ -165,67 +171,63 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
         });
 
 
-        viewHolder.btnEliminar.setOnClickListener(new View.OnClickListener() {
+        viewHolder.btnValidar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+        /*
+         Conteo conteo=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                                                   conteo.setValidado(0);
+                                                   //iConteo.validarConteo(mContext,listaConteo.get(position).getIdconteo(),0);
+                                                   Controller.getDaoSession().getConteoDao().update(conteo);
+                                                   viewHolder.lblEstado.setText("Por validar");
+         */
 
-
-                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("Eliminar Registro");
-                builder.setCancelable(false);
-                builder.setMessage("¿Seguro que desea eliminar este registro?");
-
-                builder.setPositiveButton("Eliminar",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //1:Obtencion del conteo a eliminar
-                                Conteo conteoAEliminar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
-                                //2:Guardar en el historial del conteo eliminado
-
-                                Historial historial = new Historial();
-                                historial.setConteo_id(conteoAEliminar.getId());
-                                historial.setCantidad(conteoAEliminar.getCantidad());
-                                historial.setObservacion(conteoAEliminar.getObservacion());
-                                historial.setFecharegistro(conteoAEliminar.getFecharegistro());
-                                historial.setFechamodificacion(fechaActual());
-                                historial.setTipo(-1);//eliminacion
-                                //eliminacion
-                                Controller.getDaoSession().insert(historial);
-                                conteoAEliminar.setEstado(-1);
-                                Controller.getDaoSession().update(conteoAEliminar);
-
-                                mItemManger.removeShownLayouts(viewHolder.swipeLayout);
-                                conteoList.remove(position);
-                                notifyItemRemoved(position);
-                                notifyItemRangeChanged(position, conteoList.size());
-
-                                ConteoDif conteos = new ConteoDif();
-                                List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
-                                int nuevoTotal = 0;
-                                for (int i = 0; i < listarNuevoTotal.size(); i++) {
-                                    nuevoTotal += listarNuevoTotal.get(i).getCantidad();
+                if (conteoList.get(position).getValidado()==1){
+                    Snackbar.make(v,"Este registro ya se encuentra validado...", Snackbar.LENGTH_LONG)
+                            .setActionTextColor(v.getResources().getColor(R.color.colorPrimary))
+                            .setAction("Volver a Validar", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Conteo conteo=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                                    conteo.setValidado(0);
+                                    //iConteo.validarConteo(mContext,listaConteo.get(position).getIdconteo(),0);
+                                    Controller.getDaoSession().getConteoDao().update(conteo);
+                                    viewHolder.lblEstado.setText("Por Validar");
                                 }
-                                conteos.actualizarConteoActionBar(nuevoTotal);
+                            })
+                            .show();
+                    mItemManger.closeAllItems();
+                }else{
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle("Validar registro");
+                    builder.setCancelable(false);
+                    builder.setMessage("¿Seguro que desea validar este registro?");
 
-                                mItemManger.closeAllItems();
-                                //Toast.makeText(mContext, "Eliminado " + viewHolder.lblCantidad.getText().toString(), Toast.LENGTH_SHORT).show();
-                                Snackbar.make(v, "Conteo Eliminado", Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
-                            }
-                        });
-                builder.setNegativeButton("Cancelar",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //listener.onNegativeButtonClick();
-                                mItemManger.closeAllItems();
-                                //dialog.dismiss();
-                            }
-                        });
-                builder.show();
+                    builder.setPositiveButton("Validar",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //validar conteo
+                                    Conteo conteo=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                                    conteo.setValidado(1);
+                                    viewHolder.lblEstado.setText("Validado");
+                                    Controller.getDaoSession().getConteoDao().update(conteo);
+                                    mItemManger.closeAllItems();
+                                    Snackbar.make(v,"Registro validado", Snackbar.LENGTH_SHORT).setAction("Action", null).show();
 
-
+                                }
+                            })
+                            .setNegativeButton("Cancelar",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //listener.onNegativeButtonClick();
+                                            mItemManger.closeAllItems();
+                                            //dialog.dismiss();
+                                        }
+                                    });
+                    builder.show();
+                }
             }
 
         });
@@ -273,13 +275,13 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
                         //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
                         //por default la lista historial contiene 1 registro (el registro actual)
                         List<Historial> historialList = Controller.getDaoSession().getHistorialDao().loadAll();
-                        if (historialList.size() <= 1) {
-                            historial.setTipo(0);//una modificacion
+                        if (historialList.isEmpty()) {
+                            historial.setTipo(1);//una modificacion
                         } else {
-                            historial.setTipo(1);//mas de una modificacion
+                            historial.setTipo(2);//mas de una modificacion
                         }
 
-                        Controller.getDaoSession().insert(historial);
+                        Controller.getDaoSession().getHistorialDao().insert(historial);
 
                         //3:guardar objeto nuevo en tabla conteo
                         if (validarCantidad(tilCantidad.getEditText().getText().toString())) {
@@ -357,21 +359,23 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
         SwipeLayout swipeLayout;
         TextView lblCantidad;
         TextView lblFechaRegistro;
+        TextView lblEstado;
         //TextView tvDelete;
         ImageButton btnEditar;
         //TextView tvShare;
-        ImageButton btnEliminar;
+        ImageButton btnValidar;
 
         public SimpleViewHolder(View itemView) {
             super(itemView);
             swipeLayout = (SwipeLayout) itemView.findViewById(R.id.swipeItem);
             lblCantidad = (TextView) itemView.findViewById(R.id.lblCantidad);
             lblFechaRegistro = (TextView) itemView.findViewById(R.id.lblFechaRegistro);
+            lblEstado = (TextView) itemView.findViewById(R.id.lblEstado);
 
             //tvDelete = (TextView) itemView.findViewById(R.id.tvDelete);
             btnEditar = (ImageButton) itemView.findViewById(R.id.btnEditar);
             //tvShare = (TextView) itemView.findViewById(R.id.tvShare);
-            btnEliminar = (ImageButton) itemView.findViewById(R.id.btnEliminar);
+            btnValidar = (ImageButton) itemView.findViewById(R.id.btnValidar);
         }
     }
 

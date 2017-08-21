@@ -4,7 +4,7 @@ package com.evertvd.greendaoinventario.vista.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +23,7 @@ import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
 import com.evertvd.greendaoinventario.modelo.dao.Zona_has_InventarioDao;
 import com.evertvd.greendaoinventario.utils.Operaciones;
+import com.evertvd.greendaoinventario.utils.Reporte;
 import com.evertvd.greendaoinventario.vista.adapters.ProductoResAdapater;
 import com.evertvd.greendaoinventario.vista.adapters.ZonaResAdapter;
 
@@ -36,7 +37,7 @@ public class FrmResumen extends Fragment implements View.OnClickListener{
 
     private static View view;
     private static Context context;
-    private TextView txttotal, txtResumenZona, txtResumenCodigo;
+    private TextView txttotal, txtResumenZona, txtResumenCodigo, txtSinCodigos;
 
 
     public FrmResumen() {
@@ -66,7 +67,7 @@ public class FrmResumen extends Fragment implements View.OnClickListener{
         txtResumenCodigo=(TextView)view.findViewById(R.id.txtResumenCodigo);
         txtResumenZona.setText(tituloResumenZona.toUpperCase());
         txtResumenCodigo.setText(tituloResumenCodigo.toUpperCase());
-
+        txtSinCodigos=(TextView)view.findViewById(R.id.txtSinCodigos);
         //setHasOptionsMenu(true);
 
 
@@ -88,7 +89,7 @@ public class FrmResumen extends Fragment implements View.OnClickListener{
 
 
         for(int i=0; i<productoListZona.size();i++){
-            totalConteo+=Operaciones.totalConteoProducto(productoListZona.get(i).getId());
+            totalConteo+=Operaciones.totalConteoProducto1(productoListZona.get(i).getId());
         }
 
 
@@ -107,15 +108,6 @@ public class FrmResumen extends Fragment implements View.OnClickListener{
 
         //List<Producto> productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.notEq(0)).where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
 
-        /*
-        if(beanProductoList.isEmpty()){
-            Producto producto=new Producto();
-            //producto.setZona("No se encontraron diferencias por cÃ³digo");
-            //producto.setCodigo("......");
-            //producto.setStock(totalProducto);
-            beanProductoList.add(producto);
-        }
-        */
         List<Producto> productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Estado.notEq(0)).where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
 
         // B. Creamos un nuevo ArrayAdapter con nuestra lista
@@ -125,15 +117,25 @@ public class FrmResumen extends Fragment implements View.OnClickListener{
         ListView listCodigo = (ListView)view.findViewById(R.id.listaResumenCodigo);
         listCodigo.setAdapter(adapterCodigo);
 
+        if(productoListZona.isEmpty()){
+            listCodigo.setVisibility(view.GONE);
+            txtSinCodigos.setVisibility(view.VISIBLE);
+        }else{
+            listCodigo.setVisibility(view.VISIBLE);
+            txtSinCodigos.setVisibility(view.GONE);
+        }
+
+
         return view;
     }
 
     private void generarArchivosCorreo(){
-        /*
-        Reporte repote=new Reporte();
-        repote.reporteDetallado(getActivity(),getResources().getString(R.string.carpetaReporte));
-        repote.reporteResumido(getActivity(),getResources().getString(R.string.carpetaReporte));
 
+        Reporte repote=new Reporte();
+        repote.Resumido(getActivity(),getResources().getString(R.string.carpetaReporte));
+        repote.Detallado(getActivity(),getResources().getString(R.string.carpetaReporte));
+
+        /*
         DialogEnviarEmail enviarEmail = new DialogEnviarEmail();
         enviarEmail.setCancelable(false);
         enviarEmail.show(getFragmentManager(), "tag");

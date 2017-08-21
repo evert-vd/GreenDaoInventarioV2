@@ -16,6 +16,7 @@ import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
 import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Historial;
+import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.HistorialDao;
 import com.evertvd.greendaoinventario.vista.adapters.HistorialConteoAdapter;
 
@@ -29,7 +30,7 @@ public class DialogHistorialConteo extends DialogFragment implements View.OnClic
 
 
         //private Button btnAceptar;
-        private TextView txtSinHistorial;
+        private TextView txtSinHistorial, txtConteoActual;
         private long idconteo;
 
 
@@ -77,8 +78,10 @@ public class DialogHistorialConteo extends DialogFragment implements View.OnClic
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.dialogo_historial, null);
         txtSinHistorial=(TextView)v.findViewById(R.id.txtSinHistorial);
+        txtConteoActual=(TextView)v.findViewById(R.id.txtConteoActual);
 
-
+        Conteo conteo=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(idconteo)).unique();
+        txtConteoActual.setText("Conteo Actual:"+String.valueOf(conteo.getCantidad()));
         //lista de objetos
 
         List<Historial> historialList= Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(idconteo)).list();

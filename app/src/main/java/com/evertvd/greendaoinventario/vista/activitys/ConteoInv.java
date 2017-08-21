@@ -150,7 +150,7 @@ public class ConteoInv extends AppCompatActivity implements View.OnClickListener
         conteo.setCantidad(unidadConteo);
         conteo.setFecharegistro(horaRegistro);
         conteo.setEstado(0);
-        conteo.setValidado(0);
+        conteo.setValidado(0);//por validar
         conteo.setObservacion(observacion);
         conteo.setProducto_id(producto.getId());
         Controller.getDaoSession().insert(conteo);

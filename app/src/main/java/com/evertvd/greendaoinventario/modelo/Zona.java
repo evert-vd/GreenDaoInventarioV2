@@ -187,6 +187,12 @@ public class Zona {
     }
 
     // KEEP METHODS - put your custom methods here
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
     // KEEP METHODS END
 
 }
