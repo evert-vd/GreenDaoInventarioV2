@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputLayout;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
+
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -176,21 +178,19 @@ public class DialogCierreInventario extends DialogFragment implements View.OnCli
 
 
         for (int i=0; i<productoList.size();i++){
-
             List<Conteo>conteoList=listarConteos(productoList.get(i).getId());
-
-
             int totalConteo=0;
             //List<Conteo>conteoList=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(productoList.get(i).getId())).list();
                 for (int j=0; j<conteoList.size();j++){
                     totalConteo+=conteoList.get(j).getCantidad();
                     //Log.e("totalConteo: ",String.valueOf(totalConteo));
                 }
-            if(totalConteo-productoList.get(i).getStock()!=0){
-                productoList.get(i).setEstado(-1);
-                productoList.get(i).update();
-            }else{
+            if(totalConteo-productoList.get(i).getStock()==0 && productoList.get(i).getTipo().equalsIgnoreCase("Sistema")){
                 productoList.get(i).setEstado(0);
+                productoList.get(i).update();
+
+            }else{
+                productoList.get(i).setEstado(-1);
                 productoList.get(i).update();
             }
 

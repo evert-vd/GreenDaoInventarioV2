@@ -6,10 +6,25 @@
 
     <string name="action_inventario">Cerrar Inventario</string>
     <string name="action_diferencia">Cerrar Diferencias</string>
+    <string name="action_actualizar">Actualizar Conteo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="carpetaReporte">Reportes</string>
+
+
+    <!-- Correo-->
+    <string name="tituloApss">Enviar reportes con:</string>
+    <string-array name="para">
+        <item>claudioep@molicom.com.pe</item>
+        <item>josedg@molicom.com.pe</item>
+        <!-- <item>martinmp@molicom.com.pe</item> -->
+    </string-array>
+    <string-array name="cc">
+        <item>evertvd@molicom.com.pe</item>
+    </string-array>
+    <string name="asunto">Reportes de Inventario</string>
+    <string name="mensaje">Información del Inventario</string>
 
 </resources>

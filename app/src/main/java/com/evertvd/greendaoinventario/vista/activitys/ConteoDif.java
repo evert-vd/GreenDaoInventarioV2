@@ -44,13 +44,10 @@ public class ConteoDif extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conteos);
-
         setTitle("Registro y Validación de Conteos");
 
-
-        //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_principal);
-        //setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(0);//elevacion de actbar
 
         producto = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Seleccionado.eq(1)).unique();//producto seleccionado
         Zona zona = Controller.getDaoSession().getZonaDao().queryBuilder().where(ZonaDao.Properties.Id.eq(producto.getZona_id())).unique();
@@ -150,7 +147,7 @@ public class ConteoDif extends AppCompatActivity implements View.OnClickListener
         conteo.setCantidad(conteoCapturado);
         conteo.setFecharegistro(horaRegistro);
         conteo.setEstado(0);//-1: eliminado, 1: modificado
-        conteo.setValidado(0);
+        conteo.setValidado(0);//por validar
         conteo.setObservacion(observacion);
         conteo.setProducto_id(producto.getId());
         Controller.getDaoSession().insert(conteo);

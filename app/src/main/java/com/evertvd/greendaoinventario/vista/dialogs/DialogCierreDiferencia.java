@@ -1,16 +1,20 @@
 package com.evertvd.greendaoinventario.vista.dialogs;
 
-import android.app.AlertDialog;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputLayout;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
+
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,8 +32,9 @@ import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
+import com.evertvd.greendaoinventario.utils.Operaciones;
+import com.evertvd.greendaoinventario.vista.activitys.MainActivity;
 import com.evertvd.greendaoinventario.vista.fragments.FrmResumen;
-import com.evertvd.greendaoinventario.vista.fragments.FrmZonasDiferencia;
 
 import java.util.List;
 
@@ -44,6 +49,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
     private TextView tvCodigoAleatorio;
     private TextInputLayout tilCodigo;
     private MenuItem menuDiferencia;
+    View view;
     //MetodosAuxiliares metodosAuxiliares;
 
     public DialogCierreDiferencia() {
@@ -72,7 +78,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialogo_cerrar_inventario, null);
+            view = inflater.inflate(R.layout.dialogo_cerrar_inventario, null);
         //View v = inflater.inflate(R.layout.dialogo_registrar_conteo, null);
 
         tvCodigoAleatorio = (TextView) view.findViewById(R.id.tvCodAleatorio2);
@@ -89,8 +95,8 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
         tilCodigo = (TextInputLayout) view.findViewById(R.id.tilCodigo);
 
         builder.setView(view);
-        builder.setTitle("Cerrar inventario");
-        builder.setMessage("Ingresar el código generado para confirmar el cierre del inventario");
+        builder.setTitle("Cerrar Diferencias");
+        builder.setMessage("Ingresar el código generado para confirmar el cierre de las diferencias");
         return builder.create();
     }
 
@@ -98,12 +104,6 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
     public void onClick(View v) {
         if (v.getId() == R.id.btnAceptar) {
             if (validarCodigo(tilCodigo.getEditText().getText().toString())) {
-                //NumeroAleatorio aleatorio=new NumeroAleatorio();
-                //Log.e("Tiempo aleatotorio", String.valueOf(aleatorio.generarAleatorio(2,1)));
-
-                //abrirFragmentDiferencia();
-
-
                 AsyncTaskRunner runner = new AsyncTaskRunner();
                 runner.execute(String.valueOf(1));
                 this.dismiss();
@@ -127,7 +127,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
     }
 
     private void habilitarMenus() {
-        NavigationView navView = (NavigationView) getActivity().findViewById(R.id.nav_view);
+        NavigationView navView = (NavigationView)getActivity().findViewById(R.id.nav_view);
         Menu menuNav = navView.getMenu();
 
         menuDiferencia = menuNav.findItem(R.id.nav_diferencias);
@@ -141,22 +141,32 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
         menuResumen.setEnabled(true);
         menuResumen.setChecked(true);
 
+        MenuItem menuNuevoProducto= menuNav.findItem(R.id.nav_nuevo_Producto);
+        menuNuevoProducto.setEnabled(false);
+
+
 
     }
 
     private void abrirFragmentDiferencia() {
-        FragmentManager fragmentManager=getFragmentManager();
+        //tabLayout.setVisibility(View.VISIBLE);
+
+        FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         FrmResumen frmResumen=new FrmResumen();
         fragmentTransaction.replace(R.id.contenedor, frmResumen);
         fragmentTransaction.commit();
 
+
+        //startActivity(new Intent(getActivity(), MainActivity.class));
+        //getActivity().finish();
     }
 
     private void asignarContextoResumen() {
         Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         inventario.setContexto(3);//diferencia
-        inventario.update();
+        inventario.setFechaCierre(Operaciones.fechaActual());
+        Controller.getDaoSession().getInventarioDao().update(inventario);
 
     }
 
@@ -170,6 +180,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
         //listar productos de inventario actual
         //listar conteos de productos listados
         Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+
         List<Producto> productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
 
 
@@ -236,18 +247,16 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(getActivity(),"","Calculando diferencias...");
+            progressDialog = ProgressDialog.show(getActivity(),"","Generando resumen...");
 
         }
 
 
         @Override
         protected void onProgressUpdate(String... text) {
-           // finalResult.setText(text[0]);
             habilitarMenus();
             asignarContextoResumen();
             calcularDiferencias();
-            //restaurarEstadoZona();
             abrirFragmentDiferencia();
 
         }

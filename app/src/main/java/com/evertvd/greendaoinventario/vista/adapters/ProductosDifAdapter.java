@@ -131,7 +131,7 @@ public class ProductosDifAdapter extends RecyclerView.Adapter<ProductosDifAdapte
             holder.descripcion.setText(productoList.get(position).getDescripcion());
             List<Zona> zonaList = Controller.getDaoSession().getZonaDao().queryBuilder().where(ZonaDao.Properties.Id.eq(productoList.get(position).getZona_id())).list();
             holder.zona.setText(zonaList.get(0).getNombre());
-            holder.cantidad.setText(String.valueOf(productoList.get(position).getStock())+" estado:"+String.valueOf(productoList.get(position).getEstado()));
+            holder.cantidad.setText(String.valueOf(productoList.get(position).getStock())+" estado:"+String.valueOf(productoList.get(position).getEstado())+" "+productoList.get(position).getTipo());
 
             //METODOS DE PRUEBA
             //holder.stock.setText(String.valueOf(items.get(position).getStock()));

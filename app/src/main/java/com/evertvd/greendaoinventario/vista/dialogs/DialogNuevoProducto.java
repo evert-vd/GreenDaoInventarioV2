@@ -1,12 +1,13 @@
 package com.evertvd.greendaoinventario.vista.dialogs;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,7 @@ import com.evertvd.greendaoinventario.utils.Operaciones;
 import com.evertvd.greendaoinventario.vista.adapters.NuevoProductoAdapter;
 import com.evertvd.greendaoinventario.vista.fragments.FrmNuevoProducto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -105,10 +107,26 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
         spinner = (Spinner)view.findViewById(R.id.spnZonas);
         //IZona iZona=new Sqlite_Zona();
         //String[] spinnerLists = iZona.listarZonaSpinner(getActivity());
-       List<Zona_has_Inventario>zona_has_inventarioList= Controller.getDaoSession().getZona_has_InventarioDao().queryBuilder()
+
+        /*
+        ArrayList<Integer> lista = new ArrayList<Integer>();
+        lista.add(5);
+        ArrayList<Integer> listaCopiada = new ArrayList<Integer>(lista);
+        */
+        List<Zona_has_Inventario> zonaHasInventarioList1=new ArrayList<Zona_has_Inventario>();
+        Zona_has_Inventario zona_has_inventario=new Zona_has_Inventario();//creacion de un objeto almacenado en momoria
+        zona_has_inventario.setNombreZona("Seleccionar Zona");
+        zonaHasInventarioList1.add(zona_has_inventario);
+
+        List<Zona_has_Inventario>zonaHasInventarioList2= Controller.getDaoSession().getZona_has_InventarioDao().queryBuilder()
                .where(Zona_has_InventarioDao.Properties.Inventario_id2.eq(inventario.getId())).list();
 
-        ArrayAdapter<Zona_has_Inventario> spinnerAdapter = new ArrayAdapter<Zona_has_Inventario>(getActivity(),android.R.layout.simple_spinner_dropdown_item, zona_has_inventarioList);
+       // zona_has_inventarioList=new ArrayList<>(zonaHasInventarioList1);
+        List<Zona_has_Inventario> zonaHasInventarioList3 = new ArrayList<Zona_has_Inventario>();//union de las listas 1 y 2
+        zonaHasInventarioList3.addAll(zonaHasInventarioList1);
+        zonaHasInventarioList3.addAll(zonaHasInventarioList2);
+
+        ArrayAdapter<Zona_has_Inventario> spinnerAdapter = new ArrayAdapter<Zona_has_Inventario>(getActivity(),android.R.layout.simple_spinner_dropdown_item, zonaHasInventarioList3);
         spinner.setAdapter(spinnerAdapter);
         //builder.setTitle(R.string.tituloZonas);
         builder.setView(view);
@@ -121,7 +139,8 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
     public void onClick(View v) {
         if (v.getId()== R.id.btnAceptar){
             boolean descripcion=validaDescripcionLLanta(tilDescripcion.getEditText().getText().toString());
-            boolean zona=validaZonaSeleccionada(spinner.getSelectedItemPosition());
+            //Zona_has_Inventario zonaHasInventario=(Zona_has_Inventario)spinner.getSelectedItem();
+            boolean zona=validaZonaSeleccionada(spinner.getSelectedItemPosition());//debe guardar a partir de la psicion 1, 0=Seleccionar Zona
             if (descripcion&&zona){
                 guardarDatos();
                 FragmentManager manager = getFragmentManager();

@@ -21,28 +21,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:background="@android:color/holo_orange_light"
-            android:src="@drawable/ic_menu_camera" />
-        <!--
-                <TextView
-                    android:id="@+id/tvShare"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#003c54"
-                    android:gravity="center"
-                    android:text="Share"
-                  />
+            android:background="@color/colorOrange"
+            android:tint="@color/colorWhite"
+            android:src="@drawable/ic_menu_check" />
 
-                <TextView
-                    android:id="@+id/tvDelete"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#0076a5"
-                    android:gravity="center"
-                    android:text="Delete"/>
-                -->
     </LinearLayout>
 
 
@@ -59,7 +41,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_menu_send"
+            android:src="@drawable/ic_menu_delete"
+            android:background="@color/colorRed"
+            android:tint="@color/colorWhite"
             android:gravity="center"
             android:text="Edit" />
 
@@ -149,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:text="fechaRegistro"
+                android:text="Fecha de registro:"
                 android:textSize="12sp" />
 
             <TextView

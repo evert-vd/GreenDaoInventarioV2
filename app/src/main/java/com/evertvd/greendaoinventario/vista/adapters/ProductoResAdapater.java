@@ -83,13 +83,13 @@ public class ProductoResAdapater extends BaseAdapter {
                 .where(Zona_has_InventarioDao.Properties.Inventario_id2.eq(inventario.getId())).unique();
 
 
-
+        TextView id = (TextView) v.findViewById(R.id.txtId);
         TextView codigo = (TextView) v.findViewById(R.id.txtCodigo);
         TextView zona = (TextView) v.findViewById(R.id.txtZona);
         TextView cantidad=(TextView)v.findViewById(R.id.txtTotal);
         //zona.setText(producto.getZona());
         //cantidad.setText(String.valueOf(producto.getCodigo()));
-
+        id.setText(String.valueOf(position+1));
         zona.setText(zona_has_inventario.getNombreZona());
         codigo.setText(String.valueOf(productoList.get(position).getCodigo()));
         cantidad.setText(String.valueOf(Operaciones.totalConteoProducto1(productoList.get(position).getId())));

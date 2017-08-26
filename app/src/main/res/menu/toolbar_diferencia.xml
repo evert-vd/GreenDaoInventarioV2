@@ -6,4 +6,11 @@
         android:orderInCategory="100"
         android:title="@string/action_diferencia"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_actualizar"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_menu_replay"
+        android:title="@string/action_actualizar"
+        app:showAsAction="always" />
 </menu>

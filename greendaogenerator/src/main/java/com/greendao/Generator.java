@@ -27,7 +27,7 @@ public class Generator {
     }
 
     private static void crearSchema(){
-        int schemaVersion = 1;   // incrementar en cada nueva actualización del esquema.
+        int schemaVersion = 2;   // incrementar en cada nueva actualización del esquema.
         String dataPackage = "com.evertvd.greendaoinventario.modelo";   // ruta donde almacenar las clases-entidades.
 
 
@@ -89,7 +89,8 @@ public class Generator {
         inventario.addIdProperty().primaryKey().autoincrement();
         inventario.addIntProperty("numinventario");
         inventario.addIntProperty("numequipo");
-        inventario.addStringProperty("fecha");
+        inventario.addStringProperty("fechaCreacion");
+        inventario.addStringProperty("fechaCierre");
         inventario.addIntProperty("estado");//0:abierto, 1:cerrado
         inventario.addIntProperty("contexto");//1 inventario, 2: diferencia, 3: resumen 0: terminado
         Property empresaId = inventario.addLongProperty("empresa_id").index().getProperty();// clave foránea

@@ -24,6 +24,7 @@ import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Historial;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.HistorialDao;
+import com.evertvd.greendaoinventario.utils.Operaciones;
 import com.evertvd.greendaoinventario.vista.activitys.ConteoInv;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
@@ -43,6 +44,7 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
 
     private String historialInicial;
     private long idProducto;
+    private long idConteo;
     private Context mContext;
     FragmentManager fragmentManager;
     ConteoInv listener;
@@ -62,6 +64,7 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
         this.conteoList = conteoList;
         this.idProducto = idProducto;
         this.fragmentManager = fragmentManager;
+
     }
 
     @Override
@@ -73,7 +76,7 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
     @Override
     public void onBindViewHolder(final SimpleViewHolder viewHolder, final int position) {
         //final BeanDetalleProducto item = listaDetalle.get(position);
-
+        idConteo=conteoList.get(position).getId();
         viewHolder.lblCantidad.setText(String.valueOf(conteoList.get(position).getCantidad()));
         viewHolder.lblFechaRegistro.setText(String.valueOf(conteoList.get(position).getFecharegistro()));
         //viewHolder.lblFechaRegistro.setText("00:00:00");
@@ -122,28 +125,12 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
             }
         });
 
-        /*viewHolder.swipeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                if ((((SwipeLayout) v).getOpenStatus() == SwipeLayout.Status.Close)) {
-                    //Start your activity
-
-                    Toast.makeText(mContext, " onClick : " + item.getName() + " \n" + item.getEmailId(), Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });*/
 
         viewHolder.swipeLayout.getSurfaceView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closeAllItems();
                 List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
-                for (int i = 0; i < historialList.size(); i++) {
-                    Log.e("Hisotiral", String.valueOf(historialList.get(i).getCantidad()) + " estado:" + String.valueOf(historialList.get(i).getTipo()));
-                }
-
 
                 //IHistorial iHistorial=new Sqlite_Historial();
                 //List<BeanHistorial> historialList=iHistorial.obtenerHistorial(mContext, listaDetalle.get(position).getIdconteo());
@@ -162,7 +149,6 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
 
             }
         });
-
 
         viewHolder.btnEliminar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,6 +218,8 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                 LayoutInflater inflater = LayoutInflater.from(mContext);
                 View v = inflater.inflate(R.layout.dialogo_modificar_conteo, null);
 
+
+
                 dialogModificar.setView(v).setTitle("Modificar");
                 dialogModificar.setCancelable(false);
                 dialogModificar.setMessage("Ingresar la nueva cantidad");
@@ -256,50 +244,54 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                         //2:guardar dato inicial en tabla historial
 
                         //Log.e("cantidad modificada", String.valueOf(conteoOriginal.getConteo()+" "+conteoOriginal.getObservacion()));
-                        Historial historial = new Historial();
-                        historial.setCantidad(conteoAModificar.getCantidad());
-                        historial.setConteo_id(conteoAModificar.getId());
-                        historial.setFechamodificacion(fechaActual());
-                        historial.setFecharegistro(conteoAModificar.getFecharegistro());
-                        historial.setObservacion(conteoAModificar.getObservacion());
 
-                        //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
-                        //por default la lista historial contiene 1 registro (el registro actual)
-                        List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
-                        if (historialList.isEmpty()) {
-                            historial.setTipo(1);//una modificacion
-                        } else {
-                            historial.setTipo(2);//mas de una modificacion
-                        }
-
-                        Controller.getDaoSession().getHistorialDao().insert(historial);
                         //3:guardar objeto nuevo en tabla conteo
-                        if (validarCantidad(tilCantidad.getEditText().getText().toString())) {
-                            Conteo conteoAEditar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
-                            conteoAEditar.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
-                            conteoAEditar.setObservacion(txtObservacion.getText().toString());
-                            conteoAEditar.setFecharegistro(fechaActual());
-                            conteoAEditar.setEstado(1);//modificacion
-                            Controller.getDaoSession().getConteoDao().update(conteoAEditar);
 
-                            //4:actualizacion de la vista
 
-                            viewHolder.lblCantidad.setText(txtCantidad.getText().toString());
-                            viewHolder.lblFechaRegistro.setText(fechaActual());
+                            if(validarCantidadVacia(tilCantidad.getEditText().getText().toString()) && validarCantidadDiferente(tilCantidad.getEditText().getText().toString())){
+                                Historial historial = new Historial();
+                                historial.setCantidad(conteoAModificar.getCantidad());
+                                historial.setConteo_id(conteoAModificar.getId());
+                                historial.setFechamodificacion(fechaActual());
+                                historial.setFecharegistro(conteoAModificar.getFecharegistro());
+                                historial.setObservacion(conteoAModificar.getObservacion());
 
-                            //Actualizacion totalConteo ActionBar
-                            ConteoInv conteos = new ConteoInv();
-                            List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
-                            int nuevoTotal = 0;
-                            for (int i = 0; i < listarNuevoTotal.size(); i++) {
-                                nuevoTotal += listarNuevoTotal.get(i).getCantidad();
-                            }
-                            conteos.actualizarConteoActionBar(nuevoTotal);
-                            dialog.dismiss();
-                            Snackbar.make(view, "Conteo modificado", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
+                                //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
+                                //por default la lista historial contiene 1 registro (el registro actual)
+                                List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
+                                if (historialList.isEmpty()) {
+                                    historial.setTipo(1);//una modificacion
+                                } else {
+                                    historial.setTipo(2);//mas de una modificacion
+                                }
+
+                                Controller.getDaoSession().getHistorialDao().insert(historial);
+                                Conteo conteoAEditar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                                conteoAEditar.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
+                                conteoAEditar.setObservacion(txtObservacion.getText().toString());
+                                conteoAEditar.setFecharegistro(fechaActual());
+                                conteoAEditar.setEstado(1);//modificacion
+                                Controller.getDaoSession().getConteoDao().update(conteoAEditar);
+
+                                //4:actualizacion de la vista
+
+                                viewHolder.lblCantidad.setText(txtCantidad.getText().toString());
+                                viewHolder.lblFechaRegistro.setText(fechaActual());
+
+                                //Actualizacion totalConteo ActionBar
+                                ConteoInv conteos = new ConteoInv();
+                                List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
+                                int nuevoTotal = 0;
+                                for (int i = 0; i < listarNuevoTotal.size(); i++) {
+                                    nuevoTotal += listarNuevoTotal.get(i).getCantidad();
+                                }
+                                conteos.actualizarConteoActionBar(nuevoTotal);
+                                dialog.dismiss();
+                                Snackbar.make(view, "Conteo modificado", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
+
                         } else {
-                            Snackbar.make(view, "No se ingresó un conteo válido. No se modificó", Snackbar.LENGTH_SHORT)
+                            Snackbar.make(view, "No se modificó porque la cantidad no es válida o diferente", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
                         }
 
@@ -394,12 +386,27 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
         return formato.format(hoy);
     }
 
-    private boolean validarCantidad(String cantidadIngresada) {
-        if (cantidadIngresada.trim().length() == 0) {
+    private boolean validarCantidadVacia(String cantidadIngresada) {
+        //obtener la cantidad anterior
+        if (cantidadIngresada.trim().length()== 0) {
+            Log.e("cantidad anterior", String.valueOf(Operaciones.buscarConteo(idConteo, idProducto)));
             tilCantidad.setError("Ingresar una cantidad válida");
             return false;
         } else {
             tilCantidad.setError(null);
+        }
+
+        return true;
+    }
+
+    private boolean validarCantidadDiferente(String cantidadIngresada) {
+        //obtener la cantidad anterior
+        if (Operaciones.buscarConteo(idConteo, idProducto)==Integer.parseInt(cantidadIngresada.trim())) {
+            Log.e("cantidad anterior:", String.valueOf(Operaciones.buscarConteo(idConteo, idProducto))+" nuevaCantidad:"+cantidadIngresada);
+            //tilCantidad.setError("Ingresar una cantidad diferente");
+            return false;
+        } else {
+            //tilCantidad.setError(null);
         }
 
         return true;

@@ -15,7 +15,7 @@
 
     <LinearLayout
         android:id="@+id/layoutDerecha"
-        android:layout_width="80dp"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:weightSum="1">
 
@@ -24,8 +24,9 @@
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-
-            android:src="@drawable/ic_menu_home"
+            android:src="@drawable/ic_menu_create"
+            android:tint="@color/colorWhite"
+            android:background="@color/colorGreen"
             android:gravity="center"
             android:text="Edit"
             />
@@ -46,8 +47,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:background="@android:color/holo_red_light"
-            android:src="@drawable/ic_menu_camera"/>
+            android:background="@color/colorRed"
+            android:src="@drawable/ic_menu_delete"
+            android:tint="@color/colorWhite"/>
     </LinearLayout>
 
     <!-- Top View,  Row itemView of RecyclerView -->
@@ -57,7 +59,7 @@
      <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         android:layout_marginBottom="2dp"
+         android:padding="3dp"
          android:orientation="vertical">
 
          <RelativeLayout

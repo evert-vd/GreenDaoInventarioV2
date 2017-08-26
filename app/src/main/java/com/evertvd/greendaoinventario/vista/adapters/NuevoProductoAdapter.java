@@ -1,10 +1,11 @@
 package com.evertvd.greendaoinventario.vista.adapters;
 
 
-import android.app.FragmentManager;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.evertvd.greendaoinventario.controlador.Controller;
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
+import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.utils.Operaciones;
 
 import java.util.List;
@@ -31,15 +33,8 @@ public class NuevoProductoAdapter extends RecyclerSwipeAdapter<NuevoProductoAdap
 
     FragmentManager fragmentManager;
     private Context context;
-    //Conteo listener;
-    //Activity activity;
+
     private List<Producto> productoList;
-
-    public NuevoProductoAdapter(Context context, List<Producto> productoList) {
-        this.context = context;
-        this.productoList = productoList;
-
-    }
 
     public NuevoProductoAdapter(Context context, List<Producto> productoList, FragmentManager manager) {
         this.context = context;
@@ -151,8 +146,9 @@ public class NuevoProductoAdapter extends RecyclerSwipeAdapter<NuevoProductoAdap
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 //Log.e("IDDETPROD", String.valueOf(listaProducto.get(position).getIdproducto()));
-                                Inventario inventario= Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(1)).unique();
-                                Producto producto=Controller.getDaoSession().getProductoDao().queryBuilder().where(InventarioDao.Properties.Id.eq(productoList.get(position).getId())).unique();
+                                Inventario inventario= Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+                                Producto producto=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Id.eq(productoList.get(position).getId()))
+                                        .where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).unique();
                                 Controller.getDaoSession().getProductoDao().delete(producto);
 
                                     mItemManger.removeShownLayouts(viewHolder.swipeLayout);
@@ -187,22 +183,7 @@ public class NuevoProductoAdapter extends RecyclerSwipeAdapter<NuevoProductoAdap
         viewHolder.btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*
 
-
-                try {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("idProducto", listaProducto.get(position).getId());
-                    bundle.putString("codigo", listaProducto.get(position).getCodigo());
-                    bundle.putString("descripcion", listaProducto.get(position).getDescripcion());
-                    DCantidadNuevoProducto dialogFragment = new DCantidadNuevoProducto ();
-                    dialogFragment.setArguments(bundle);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(fragmentManager, "dialogo agregar cantidad");
-                }catch (Exception e){
-
-                }
-                 */
                 mItemManger.closeAllItems();
 
                 Snackbar.make(view, "Edición de registro denegado", Snackbar.LENGTH_SHORT)
@@ -249,13 +230,5 @@ public class NuevoProductoAdapter extends RecyclerSwipeAdapter<NuevoProductoAdap
         }
     }
 
-
-    private void eliminarConteoNuevoProducto(int idProducto) {
-        //IConteo iConteo = new Sqlite_Conteo();
-       // iConteo.eliminarConteoNuevoProducto(context, idProducto);
-        Producto producto=new Producto();
-        producto.delete();
-
-    }
 
 }

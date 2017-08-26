@@ -34,10 +34,11 @@ public class InventarioDao extends AbstractDao<Inventario, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Numinventario = new Property(1, Integer.class, "numinventario", false, "NUMINVENTARIO");
         public final static Property Numequipo = new Property(2, Integer.class, "numequipo", false, "NUMEQUIPO");
-        public final static Property Fecha = new Property(3, String.class, "fecha", false, "FECHA");
-        public final static Property Estado = new Property(4, Integer.class, "estado", false, "ESTADO");
-        public final static Property Contexto = new Property(5, Integer.class, "contexto", false, "CONTEXTO");
-        public final static Property Empresa_id = new Property(6, Long.class, "empresa_id", false, "EMPRESA_ID");
+        public final static Property FechaCreacion = new Property(3, String.class, "fechaCreacion", false, "FECHA_CREACION");
+        public final static Property FechaCierre = new Property(4, String.class, "fechaCierre", false, "FECHA_CIERRE");
+        public final static Property Estado = new Property(5, Integer.class, "estado", false, "ESTADO");
+        public final static Property Contexto = new Property(6, Integer.class, "contexto", false, "CONTEXTO");
+        public final static Property Empresa_id = new Property(7, Long.class, "empresa_id", false, "EMPRESA_ID");
     }
 
     private DaoSession daoSession;
@@ -60,10 +61,11 @@ public class InventarioDao extends AbstractDao<Inventario, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"NUMINVENTARIO\" INTEGER," + // 1: numinventario
                 "\"NUMEQUIPO\" INTEGER," + // 2: numequipo
-                "\"FECHA\" TEXT," + // 3: fecha
-                "\"ESTADO\" INTEGER," + // 4: estado
-                "\"CONTEXTO\" INTEGER," + // 5: contexto
-                "\"EMPRESA_ID\" INTEGER);"); // 6: empresa_id
+                "\"FECHA_CREACION\" TEXT," + // 3: fechaCreacion
+                "\"FECHA_CIERRE\" TEXT," + // 4: fechaCierre
+                "\"ESTADO\" INTEGER," + // 5: estado
+                "\"CONTEXTO\" INTEGER," + // 6: contexto
+                "\"EMPRESA_ID\" INTEGER);"); // 7: empresa_id
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_INVENTARIO_EMPRESA_ID ON INVENTARIO" +
                 " (\"EMPRESA_ID\");");
@@ -94,24 +96,29 @@ public class InventarioDao extends AbstractDao<Inventario, Long> {
             stmt.bindLong(3, numequipo);
         }
  
-        String fecha = entity.getFecha();
-        if (fecha != null) {
-            stmt.bindString(4, fecha);
+        String fechaCreacion = entity.getFechaCreacion();
+        if (fechaCreacion != null) {
+            stmt.bindString(4, fechaCreacion);
+        }
+ 
+        String fechaCierre = entity.getFechaCierre();
+        if (fechaCierre != null) {
+            stmt.bindString(5, fechaCierre);
         }
  
         Integer estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindLong(5, estado);
+            stmt.bindLong(6, estado);
         }
  
         Integer contexto = entity.getContexto();
         if (contexto != null) {
-            stmt.bindLong(6, contexto);
+            stmt.bindLong(7, contexto);
         }
  
         Long empresa_id = entity.getEmpresa_id();
         if (empresa_id != null) {
-            stmt.bindLong(7, empresa_id);
+            stmt.bindLong(8, empresa_id);
         }
     }
 
@@ -134,24 +141,29 @@ public class InventarioDao extends AbstractDao<Inventario, Long> {
             stmt.bindLong(3, numequipo);
         }
  
-        String fecha = entity.getFecha();
-        if (fecha != null) {
-            stmt.bindString(4, fecha);
+        String fechaCreacion = entity.getFechaCreacion();
+        if (fechaCreacion != null) {
+            stmt.bindString(4, fechaCreacion);
+        }
+ 
+        String fechaCierre = entity.getFechaCierre();
+        if (fechaCierre != null) {
+            stmt.bindString(5, fechaCierre);
         }
  
         Integer estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindLong(5, estado);
+            stmt.bindLong(6, estado);
         }
  
         Integer contexto = entity.getContexto();
         if (contexto != null) {
-            stmt.bindLong(6, contexto);
+            stmt.bindLong(7, contexto);
         }
  
         Long empresa_id = entity.getEmpresa_id();
         if (empresa_id != null) {
-            stmt.bindLong(7, empresa_id);
+            stmt.bindLong(8, empresa_id);
         }
     }
 
@@ -172,10 +184,11 @@ public class InventarioDao extends AbstractDao<Inventario, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1), // numinventario
             cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2), // numequipo
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // fecha
-            cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4), // estado
-            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // contexto
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // empresa_id
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // fechaCreacion
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // fechaCierre
+            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // estado
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // contexto
+            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7) // empresa_id
         );
         return entity;
     }
@@ -185,10 +198,11 @@ public class InventarioDao extends AbstractDao<Inventario, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setNuminventario(cursor.isNull(offset + 1) ? null : cursor.getInt(offset + 1));
         entity.setNumequipo(cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2));
-        entity.setFecha(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setEstado(cursor.isNull(offset + 4) ? null : cursor.getInt(offset + 4));
-        entity.setContexto(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
-        entity.setEmpresa_id(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
+        entity.setFechaCreacion(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setFechaCierre(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setEstado(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
+        entity.setContexto(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
+        entity.setEmpresa_id(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
      }
     
     @Override

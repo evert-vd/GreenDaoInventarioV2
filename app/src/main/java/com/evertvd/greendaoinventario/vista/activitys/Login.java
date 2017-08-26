@@ -25,6 +25,7 @@ import com.evertvd.greendaoinventario.modelo.Zona_has_Inventario;
 import com.evertvd.greendaoinventario.modelo.dao.EmpresaDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
 import com.evertvd.greendaoinventario.utils.Desencriptar;
+import com.evertvd.greendaoinventario.utils.Operaciones;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -200,6 +201,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 inventario.setNuminventario(numInventario);
                 inventario.setEstado(0);//0:abierto, 1:cerrado
                 inventario.setContexto(1);//1:inventario, 2:diferencia, 3:resumen, 0: terminado
+                inventario.setFechaCreacion(Operaciones.fechaActual());
                 inventario.setEmpresa_id(empresa.getId());
                 Controller.getDaoSession().getInventarioDao().insert(inventario);
                 return true;

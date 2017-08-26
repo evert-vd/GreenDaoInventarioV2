@@ -1,12 +1,13 @@
 package com.evertvd.greendaoinventario.vista.fragments;
 
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.DividerItemDecoration;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
+import com.evertvd.greendaoinventario.utils.DividerItemDecoration;
 import com.evertvd.greendaoinventario.vista.adapters.NuevoProductoAdapter;
 import com.evertvd.greendaoinventario.vista.dialogs.DialogNuevoProducto;
 
@@ -35,7 +37,6 @@ public class FrmNuevoProducto extends Fragment implements View.OnClickListener{
     View view;
     private TextView tvSinRegistros;
     private RecyclerView mRecyclerView;
-    private int idProducto;
     FragmentManager fragmentManager;
     public FrmNuevoProducto() {
         // Required empty public constructor
@@ -55,16 +56,12 @@ public class FrmNuevoProducto extends Fragment implements View.OnClickListener{
         listaNuevoProducto=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
                 .where(ProductoDao.Properties.Tipo.notEq("Sistema")).list();
 
-        for(int i=0; i<listaNuevoProducto.size();i++){
-            Log.e("lista", String.valueOf(listaNuevoProducto.get(i).getCodigo()));
-        }
-
-
         // Layout Managers:
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // Item Decorator:
-        //mRecyclerView.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.divider)));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.divider)));
+
         // mRecyclerView.setItemAnimator(new FadeInLeftAnimator());
         //mRecyclerView.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.divider)));
         //fragment manager que se envia como parametro a los recyclerAdapter
@@ -131,26 +128,13 @@ public class FrmNuevoProducto extends Fragment implements View.OnClickListener{
                 DialogNuevoProducto registrarNuevoProducto=new DialogNuevoProducto();
                 registrarNuevoProducto.setCancelable(false);
                 registrarNuevoProducto.show(fm,"nuevo producto");
-                /*
-                android.support.v4.app.FragmentTransaction ft = ((FragmentActivity)getActivity()).getSupportFragmentManager().beginTransaction();
-                DialogRegistrarNuevoProducto dialog = DialogRegistrarNuevoProducto.newInstance();
-                dialog.show(ft, "Tag");
-                dialog.setCancelable(false);
-                */
 
             } catch (Exception e) {
                 Log.e("error", e.toString());
             }
 
         }
-        /*else if (v.getId()==R.id.btnAddPruebas){
-                //Paso 2: Crear una nueva transacción
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                //Paso 3: Crear un nuevo fragmento y añadirlo
-                AgregarNuevo nuevo=new AgregarNuevo();
-                transaction.replace(R.id.contenedor, nuevo);
-                transaction.commit();
-            }*/
+
         }
 
 

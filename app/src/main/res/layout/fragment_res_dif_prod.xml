@@ -1,0 +1,97 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.evertvd.greendaoinventario.vista.fragments.FrmResumenDifProd">
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/txtResumenCodigo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textAlignment="center"
+                android:text="resumen"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:layout_marginLeft="15dp"
+                    android:textColor="@color/cardview_dark_background"
+                    android:text="Id"/>
+
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/cardview_dark_background"
+                    android:text="Código"/>
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/cardview_dark_background"
+                    android:text="Zona"/>
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="50dp"
+                    android:textSize="16dp"
+                    android:textColor="@color/cardview_dark_background"
+                    android:text="Cantidad (und)"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtSinCodigos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    android:text="Inventario Ok: Ningun código con diferencia"/>
+                <ListView
+                    android:id="@+id/listaResumenCodigo"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </ListView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

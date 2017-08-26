@@ -100,9 +100,6 @@ public class Reporte {
 
     public void Detallado(Context context, String nombreCarpeta){
         Inventario inventario= Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-        Empresa empresa=Controller.getDaoSession().getEmpresaDao().queryBuilder().where(EmpresaDao.Properties.Id.eq(inventario.getId())).unique();
-
-
 
         /*
         QueryBuilder<Conteo> queryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder();
@@ -119,8 +116,9 @@ public class Reporte {
             Log.e("detallado1",String.valueOf(productoList.get(i).getCodigo()));
         }
         */
-        List<Producto> productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).list();
-        Log.e("tamaño",String.valueOf(productoList.size()));
+        List<Producto> productoSistema=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
+                .where(ProductoDao.Properties.Tipo.eq("Sistema")).list();
+        Log.e("tamaño",String.valueOf(productoSistema.size()));
         /*
         for(int i=0;i<productoList.size();i++){
             List<Conteo>conteoList=productoList.get(i).getConteoList();
@@ -182,20 +180,20 @@ public class Reporte {
                 fout.write("ZONA, CODIGO,DESCRIPCION,CANTIDAD,OBSERVACION,HISTORIAL,ESTADO");
                 fout.write("\n");
 
-                for (int i=0; i<productoList.size(); i++){
+                for (int i=0; i<productoSistema.size(); i++){
                     //Log.e("detallado",String.valueOf(productoList.get(i).getProducto().getCodigo())+" cantidad:"+String.valueOf(productoList.get(i).getCantidad()));
-                    List<Conteo>conteoList=productoList.get(i).getConteoList();
+                    List<Conteo>conteoList=productoSistema.get(i).getConteoList();
                     if(!conteoList.isEmpty()){
 
                         for(int j=0;j<conteoList.size();j++){
-                            fout.write(String.valueOf(productoList.get(i).getZona().toString()));
+                            fout.write(String.valueOf(productoSistema.get(i).getZona().toString()));
                             fout.write(",");
-                            fout.write(String.valueOf(productoList.get(i).getCodigo()));
+                            fout.write(String.valueOf(productoSistema.get(i).getCodigo()));
                             fout.write(",");
-                            fout.write(String.valueOf(productoList.get(i).getDescripcion()));
+                            fout.write(String.valueOf(productoSistema.get(i).getDescripcion()));
                             fout.write(",");
                             if(conteoList.get(j).getEstado()==-1){
-                                fout.write(String.valueOf(-conteoList.get(j).getCantidad()));
+                                fout.write(String.valueOf(-conteoList.get(j).getCantidad()));//eliminado en (-)
                             }else{
                                 fout.write(String.valueOf(conteoList.get(j).getCantidad()));
                             }
@@ -204,8 +202,8 @@ public class Reporte {
                             fout.write(",");
                             String historial="";
 
-                            List<Historial> historialList=productoList.get(i).getConteoList().get(j).getHistorialList();
-                            if(!productoList.get(i).getConteoList().get(j).getHistorialList().isEmpty()){
+                            List<Historial> historialList=productoSistema.get(i).getConteoList().get(j).getHistorialList();
+                            if(!productoSistema.get(i).getConteoList().get(j).getHistorialList().isEmpty()){
                                 for(int k=0;k<historialList.size();k++){
                                     String tipo="";
                                     if(historialList.get(k).getTipo()==1){
@@ -229,11 +227,11 @@ public class Reporte {
                             fout.write("\n");
                         }
                     }else{
-                        fout.write(String.valueOf(productoList.get(i).getZona().toString()));
+                        fout.write(String.valueOf(productoSistema.get(i).getZona().toString()));
                         fout.write(",");
-                        fout.write(String.valueOf(productoList.get(i).getCodigo()));
+                        fout.write(String.valueOf(productoSistema.get(i).getCodigo()));
                         fout.write(",");
-                        fout.write(String.valueOf(productoList.get(i).getDescripcion()));
+                        fout.write(String.valueOf(productoSistema.get(i).getDescripcion()));
                         fout.write(",");
                         fout.write(String.valueOf(0));//cantidad
                         fout.write(",");
@@ -251,30 +249,33 @@ public class Reporte {
                 fout.write("\n");
                 fout.write("\n");
 
-                /*
-                List<BeanReporte> listProductoNuevo=iReporte.reporteDetalladoNuevoProducto(context);
-                if (listProductoNuevo.isEmpty()==false){
+                /*Producto ingresados desde la aplicacion*/
+                 List<Producto> productoAplicacion=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
+                .where(ProductoDao.Properties.Tipo.eq("Aplicacion")).list();
+
+                if (!productoAplicacion.isEmpty()){
                     fout.write("Productos que se encuentran fuera del stock del sistema".toUpperCase());
                     fout.write("\n");
                     fout.write("ZONA, CODIGO,DESCRIPCION,CANTIDAD,OBSERVACION, HISTORIAL");
                     fout.write("\n");
 
-                    for (int i=0; i<listProductoNuevo.size(); i++){
-                        fout.write(listProductoNuevo.get(i).getZona());
+                    for (int i=0; i<productoAplicacion.size(); i++){
+                        fout.write(productoAplicacion.get(i).getZona().getNombre());
                         fout.write(",");
-                        fout.write(listProductoNuevo.get(i).getCodigo());
+                        fout.write(productoAplicacion.get(i).getCodigo());
                         fout.write(",");
-                        fout.write(String.valueOf(listProductoNuevo.get(i).getDescripcion()));
+                        fout.write(String.valueOf(productoAplicacion.get(i).getDescripcion()));
                         fout.write(",");
-                        fout.write(String.valueOf(listProductoNuevo.get(i).getCantidad()));
+                        //long j=i;
+                        //fout.write(String.valueOf(Operaciones.buscarConteo(Operaciones.totalConteoProducto1(productoAplicacion.get(i).getId()))));
                         fout.write(",");
-                        fout.write(String.valueOf(listProductoNuevo.get(i).getObservacion()));
+                        fout.write(String.valueOf(productoAplicacion.get(i).getDescripcion()));
                         fout.write(",");
-                        fout.write(String.valueOf(iHistorial.obtenerHistorialCadena(context,listProductoNuevo.get(i).getIdConteo())));
+                        //fout.write(String.valueOf(iHistorial.obtenerHistorialCadena(context,listProductoNuevo.get(i).getIdConteo())));
                         fout.write("\n");
                     }
                 }
-            */
+
 
                 fout.close();
                 //Toast.makeText(context, "Reporte Detallado exportado correctamente", Toast.LENGTH_SHORT).show();

@@ -3,11 +3,11 @@ package com.evertvd.greendaoinventario.vista.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,7 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 
 import com.evertvd.greendaoinventario.R;
@@ -35,27 +35,42 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private MenuItem menuDiferencia, menuInventario, menuResumen;
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    //private FragmentManager fragmentManager;
+    //private Fragment fragment = null;
+
+
+    private MenuItem menuDiferencia, menuInventario, menuResumen, menuNuevoProducto;
     private Menu menuNav;
     private Inventario inventario;
+    private TextView txtNumEquipo, txtNumInventario;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        List<Inventario> inventarioList = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).list();
+        //long idUltimoInventario=0;
+        if (inventarioList.size() > 1) {
+            //cierra todos los inventarios menos el ultimo
+            for (int i = 0; i < inventarioList.size() - 1; i++) {
+                Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(inventarioList.get(i).getId())).unique();
+                inventario.setEstado(1);
+                inventario.update();
+
+            }
+        }
+
+        inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -68,49 +83,71 @@ public class MainActivity extends AppCompatActivity
         menuNav = navigationView.getMenu();
         menuInventario = menuNav.findItem(R.id.nav_inventario);
         menuDiferencia = menuNav.findItem(R.id.nav_diferencias);
+        menuNuevoProducto=menuNav.findItem(R.id.nav_nuevo_Producto);
         menuResumen = menuNav.findItem(R.id.nav_resumen);
 
-        //verificar..esta devolviendo dos valores
-        List<Inventario> inventarioList=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).list();
-        //long idUltimoInventario=0;
-        if(inventarioList.size()>1){
-            //cierra todos los inventarios menos el ultimo
-          for (int i=0; i<inventarioList.size()-1;i++){
-              Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(inventarioList.get(i).getId())).unique();
-              inventario.setEstado(1);
-              inventario.update();
+        //Forma de acceder al titulo del header
+        View header = navigationView.getHeaderView(0);
+        txtNumInventario = (TextView) header.findViewById(R.id.txtNumInventario);
+        txtNumEquipo = (TextView) header.findViewById(R.id.txtNumEquipo);
 
-              //idUltimoInventario=inventarioList.get(i).getId();
-          }
-            /*
-            Log.e("idUltimo", String.valueOf(idUltimoInventario));
-         Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(idUltimoInventario)).unique();
-            inventario.setEstado(0);
-            inventario.update();*/
+        /*
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+*/
+
+        //fragmentManager = getSupportFragmentManager();
+        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        //fragment = new LibraryFragment();
+        //fragmentTransaction.replace(R.id.main_container_wrapper, fragment);
+        //fragmentTransaction.commit();
+
+
+        //verificar..esta devolviendo dos valores
+
+
+
+        if (inventario != null) {
+            txtNumInventario.setText("INV-" + inventario.getEmpresa().getCodempresa() + "-" + inventario.getNuminventario() + "-" + inventario.getNumequipo());
+            if (inventario.getNumequipo() < 10) {
+                txtNumEquipo.setText("0" + String.valueOf(inventario.getNumequipo()));
+            } else {
+                txtNumEquipo.setText(String.valueOf(inventario.getNumequipo()));
+            }
+
         }
 
-        inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         if (inventario != null) {
+            FragmentManager fragmentManager=getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
             if (inventario.getContexto() == 1) {
-                abrirContextoInventario();
+                abrirContextoInventario(fragmentTransaction);
                 menuInventario.setChecked(true);
                 menuDiferencia.setEnabled(false);
                 menuResumen.setEnabled(false);
 
             } else if (inventario.getContexto() == 2) {
-                abrirContextoDiferencias();
+                abrirContextoDiferencias(fragmentTransaction);
                 menuDiferencia.setChecked(true);
                 menuDiferencia.setEnabled(true);
                 menuInventario.setEnabled(false);
                 menuResumen.setEnabled(false);
             } else if (inventario.getContexto() == 3) {
-                abrirContextoResumen();
+                abrirContextoResumen(fragmentTransaction);
                 menuResumen.setChecked(true);
                 menuDiferencia.setEnabled(true);
                 menuDiferencia.setEnabled(false);
                 menuInventario.setEnabled(false);
+                menuNuevoProducto.setEnabled(false);
             } else {
                 startActivity(new Intent(this, Login.class));
+                finish();
             }
 
         } else {
@@ -119,9 +156,19 @@ public class MainActivity extends AppCompatActivity
                 agregarEmpresas();
             }
 
+
             startActivity(new Intent(this, Login.class));
         }
     }
+    //metodo sobreescrito que actualiza la cantidad al volver desde el activity detalle
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        finish();
+        startActivity(getIntent());
+        //inicializarRecycler();
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -129,7 +176,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+           // super.onBackPressed();
         }
     }
 /*
@@ -175,32 +222,40 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+        //Fragment fragment=null;
         switch (id) {
             case R.id.nav_inventario:
                 //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                FrmZonasInventario frmZonas = new FrmZonasInventario();
-                fragmentTransaction.replace(R.id.contenedor, frmZonas);
+                FrmZonasInventario frmZonasInventario = new FrmZonasInventario();
+                fragmentTransaction.replace(R.id.contenedor, frmZonasInventario);
+                fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fragmentTransaction.commit();
+                //fragment = new FrmZonasInventario();
                 break;
 
-       // } else if (id == R.id.nav_diferencias) {
+            // } else if (id == R.id.nav_diferencias) {
             case R.id.nav_diferencias:
-            //FragmentManager fragmentManager = getFragmentManager();
-            //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
-            fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
-            fragmentTransaction.commit();
+                //FragmentManager fragmentManager = getFragmentManager();
+                //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
+                fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
+                fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                fragmentTransaction.commit();
+                //fragment = new FrmZonasDiferencia();
                 break;
 
-        //} else if (id == R.id.nav_resumen) {
+            //} else if (id == R.id.nav_resumen) {
             case R.id.nav_resumen:
-            //FragmentManager fragmentManager = getSupportFragmentManager();
-            //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            FrmResumen frmResumen = new FrmResumen();
-            fragmentTransaction.replace(R.id.contenedor, frmResumen);
-            fragmentTransaction.commit();
+
+                FrmResumen frmResumen = new FrmResumen();
+                fragmentTransaction.replace(R.id.contenedor, frmResumen);
+                fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                fragmentTransaction.commit();
+                //fragment = new FrmResumen();
+                break;
 
             case R.id.nav_nuevo_Producto:
 
@@ -208,12 +263,13 @@ public class MainActivity extends AppCompatActivity
                 //Reemplazar el fragment actual por el nuevo fragment
                 fragmentTransaction.replace(R.id.contenedor, listarNuevo);
                 //Animacion al abrir el nuevo fragment
-                fragmentTransaction.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                 fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
                 //Regresa al fragment anterior con la tecla atras
                 //transaction.addToBackStack(null);
                 //getSupportActionBar().setTitle(menuItem.getTitle());
                 fragmentTransaction.commit();
+                //fragment = new FrmNuevoProducto();
                 break;
 
             //}
@@ -221,37 +277,57 @@ public class MainActivity extends AppCompatActivity
 
             //break;
 
-
-            /*
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            // Replace whatever is in the fragment_container view with this fragment,
-            // and add the transaction to the back stack
-            Pruebas fragment = new Pruebas();
-            fragmentTransaction.replace(R.id.contenedor, fragment);
-            fragmentTransaction.commit();
-            */
-        //} else if (id == R.id.nav_iniciarSesion) {
+            //} else if (id == R.id.nav_iniciarSesion) {
             case R.id.nav_iniciarSesion:
-            break;
+                break;
             case R.id.nav_cerrarSesion:
+                Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+                //Log.e("Inventario actual", String.valueOf(inventario.getId()));
+                Controller.getDaoSession().getInventarioDao().delete(inventario);
+                startActivity(new Intent(this, Login.class));
+                break;
+            default:
 
-       // } else if (id == R.id.nav_cerrarSesion) {
+                startActivity(new Intent(this, Login.class));
+                finish();
+                break;
+
+
+        /*
+        if(id==R.id.nav_inventario) {
+            fragment = new FrmZonasInventario();
+
+        }else if(id==R.id.nav_diferencias) {
+            fragment=new FrmZonasDiferencia();
+        }else if(id==R.id.nav_resumen) {
+            fragment=new FrmResumen();
+        }else if(id==R.id.nav_nuevo_Producto){
+            fragment=new FrmNuevoProducto();
+        }else if(id==R.id.nav_cerrarSesion){
             Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-            Log.e("Inventario actual", String.valueOf(inventario.getId()));
+            //Log.e("Inventario actual", String.valueOf(inventario.getId()));
             Controller.getDaoSession().getInventarioDao().delete(inventario);
             startActivity(new Intent(this, Login.class));
-            break;
+        }
+                // } else if (id == R.id.nav_cerrarSesion) {
+*/
+
+            //FragmentTransaction transaction = fragmentManager.beginTransaction();
+            //transaction.replace(R.id.contenedor, fragment);
+            //transaction.commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+
+
         return true;
     }
 
-    private void abrirContextoInventario() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+    private void abrirContextoInventario(FragmentTransaction fragmentTransaction ) {
+        //FragmentManager fragmentManager = getFragmentManager();
+        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
         FrmZonasInventario fragment = new FrmZonasInventario();
@@ -260,20 +336,22 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void abrirContextoDiferencias() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
-        fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
-        fragmentTransaction.commit();
+    private void abrirContextoDiferencias(FragmentTransaction fragmentTransaction) {
+        //FragmentManager fragmentManager = getFragmentManager();
+        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
+            fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
+            fragmentTransaction.commit();
+
+
     }
 
-    private void abrirContextoResumen() {
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        FrmResumen frmResumen = new FrmResumen();
-        fragmentTransaction.replace(R.id.contenedor, frmResumen);
-        fragmentTransaction.commit();
+    private void abrirContextoResumen(FragmentTransaction fragmentTransaction) {
+                  FrmResumen frmResumen = new FrmResumen();
+            fragmentTransaction.replace(R.id.contenedor, frmResumen);
+            fragmentTransaction.commit();
+
     }
 
     private void agregarEmpresas() {
@@ -300,4 +378,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
+
+
 }
+

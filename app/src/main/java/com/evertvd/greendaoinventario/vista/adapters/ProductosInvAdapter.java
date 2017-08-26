@@ -109,6 +109,7 @@ public class ProductosInvAdapter extends RecyclerView.Adapter<ProductosInvAdapte
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup,
                                          int viewType) {
         // create a new view
+
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.adapter_producto_inv, viewGroup, false);
         // set the view's size, margins, paddings and layout parameters

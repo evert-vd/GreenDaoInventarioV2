@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
     android:id="@+id/swipeItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,8 +22,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:background="@android:color/holo_red_light"
-            android:src="@drawable/ic_menu_manage" />
+            android:background="@color/colorRed"
+            android:tint="@color/colorWhite"
+            android:src="@drawable/ic_menu_delete" />
         <!--
                 <TextView
                     android:id="@+id/tvShare"
@@ -59,7 +61,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_menu_send"
+            android:src="@drawable/ic_menu_create"
+            android:background="@color/colorGreen"
+            android:tint="@color/colorWhite"
             android:gravity="center"
             android:text="Edit" />
 
@@ -117,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:text="fechaRegistro"
+                android:text="Fecha de Registro"
                 android:textSize="12sp" />
 
             <TextView
@@ -125,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:layout_marginLeft="12dp"
+                android:layout_marginLeft="10dp"
                 android:text="fechaRegistro"
                 android:textSize="12sp" />
 

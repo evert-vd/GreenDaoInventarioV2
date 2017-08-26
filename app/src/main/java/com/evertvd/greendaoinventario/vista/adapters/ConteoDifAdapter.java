@@ -26,6 +26,7 @@ import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Historial;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.HistorialDao;
+import com.evertvd.greendaoinventario.utils.Operaciones;
 import com.evertvd.greendaoinventario.vista.activitys.ConteoDif;
 import com.evertvd.greendaoinventario.vista.activitys.ConteoInv;
 import com.evertvd.greendaoinventario.vista.dialogs.DialogHistorialConteo;
@@ -43,7 +44,7 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
     TextInputLayout tilObservacion;
 
 
-    private long idProducto;
+    private long idProducto, idConteo;
     private Context mContext;
     FragmentManager fragmentManager;
     private int validado;
@@ -76,10 +77,10 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
 
         viewHolder.lblCantidad.setText(String.valueOf(conteoList.get(position).getCantidad()));
         viewHolder.lblFechaRegistro.setText(String.valueOf(conteoList.get(position).getFecharegistro()));
-
+        idConteo=conteoList.get(position).getId();
         //viewHolder.lblFechaRegistro.setText("00:00:00");
 
-        if(conteoList.get(position).getEstado()!=1){
+        if(conteoList.get(position).getValidado()!=1){
             viewHolder.lblEstado.setText("Por Validar");
         }else{
             viewHolder.lblEstado.setText("Validado");
@@ -143,11 +144,8 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
         viewHolder.swipeLayout.getSurfaceView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mItemManger.closeAllItems();
                 List<Historial> historialList = Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(conteoList.get(position).getId())).list();
-                for (int i = 0; i < historialList.size(); i++) {
-                    Log.e("Historial", String.valueOf(historialList.get(i).getCantidad()) + " estado:" + String.valueOf(historialList.get(i).getTipo()));
-                }
-
 
                 //IHistorial iHistorial=new Sqlite_Historial();
                 //List<BeanHistorial> historialList=iHistorial.obtenerHistorial(mContext, listaDetalle.get(position).getIdconteo());
@@ -236,105 +234,118 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
             @Override
             public void onClick(final View view) {
 
+                if (conteoList.get(position).getValidado() != 1) {
+                    AlertDialog.Builder dialogModificar = new AlertDialog.Builder(mContext);
+                    LayoutInflater inflater = LayoutInflater.from(mContext);
+                    View v = inflater.inflate(R.layout.dialogo_modificar_conteo, null);
 
-                AlertDialog.Builder dialogModificar = new AlertDialog.Builder(mContext);
-                LayoutInflater inflater = LayoutInflater.from(mContext);
-                View v = inflater.inflate(R.layout.dialogo_modificar_conteo, null);
+                    dialogModificar.setView(v).setTitle("Modificar");
+                    dialogModificar.setCancelable(false);
+                    dialogModificar.setMessage("Ingresar la nueva cantidad");
 
-                dialogModificar.setView(v).setTitle("Modificar");
-                dialogModificar.setCancelable(false);
-                dialogModificar.setMessage("Ingresar la nueva cantidad");
+                    abCantidad = (TextView) v.findViewById(R.id.txtAbCantidad);
+                    txtCantidad = (EditText) v.findViewById(R.id.etCantidad);
+                    txtObservacion = (EditText) v.findViewById(R.id.etObservacion);
+                    tilCantidad = (TextInputLayout) v.findViewById(R.id.tilCantidad);
+                    tilObservacion = (TextInputLayout) v.findViewById(R.id.tilObservacion);
 
-                abCantidad = (TextView) v.findViewById(R.id.txtAbCantidad);
-                txtCantidad = (EditText) v.findViewById(R.id.etCantidad);
-                txtObservacion = (EditText) v.findViewById(R.id.etObservacion);
-                tilCantidad = (TextInputLayout) v.findViewById(R.id.tilCantidad);
-                tilObservacion = (TextInputLayout) v.findViewById(R.id.tilObservacion);
+                    //final IConteo iConteo=new Sqlite_Conteo();
+                    //1: captura conteo original
+                    final Conteo conteo = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                    //final BeanConteo conteoOriginal=iConteo.obtenerConteo(mContext, listaDetalle.get(position).getIdconteo());
+                    txtCantidad.setText(String.valueOf(conteo.getCantidad()));
+                    txtCantidad.setSelection(txtCantidad.getText().length());//poner cursor al final
+                    txtObservacion.setText(conteo.getObservacion());
 
-                //final IConteo iConteo=new Sqlite_Conteo();
-                //1: captura conteo original
-                final Conteo conteo = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
-                //final BeanConteo conteoOriginal=iConteo.obtenerConteo(mContext, listaDetalle.get(position).getIdconteo());
-                txtCantidad.setText(String.valueOf(conteo.getCantidad()));
-                txtCantidad.setSelection(txtCantidad.getText().length());//poner cursor al final
-                txtObservacion.setText(conteo.getObservacion());
+                    dialogModificar.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //2:guardar dato inicial en tabla historial
+                            //3:guardar objeto nuevo en tabla conteo
+                            if (validarCantidadVacia(tilCantidad.getEditText().getText().toString())&& validarCantidadDiferente(tilCantidad.getEditText().getText().toString())) {
 
-                dialogModificar.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //2:guardar dato inicial en tabla historial
+                                Historial historial = new Historial();
+                                historial.setCantidad(conteo.getCantidad());
+                                historial.setConteo_id(conteo.getId());
+                                historial.setFechamodificacion(fechaActual());
+                                historial.setFecharegistro(conteo.getFecharegistro());
+                                historial.setObservacion(conteo.getObservacion());
 
-                        //Log.e("cantidad modificada", String.valueOf(conteoOriginal.getConteo()+" "+conteoOriginal.getObservacion()));
-                        Historial historial = new Historial();
-                        historial.setCantidad(conteo.getCantidad());
-                        historial.setConteo_id(conteo.getId());
-                        historial.setFechamodificacion(fechaActual());
-                        historial.setFecharegistro(conteo.getFecharegistro());
-                        historial.setObservacion(conteo.getObservacion());
+                                //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
+                                //por default la lista historial contiene 1 registro (el registro actual)
+                                List<Historial> historialList = Controller.getDaoSession().getHistorialDao().loadAll();
+                                if (historialList.isEmpty()) {
+                                    historial.setTipo(1);//una modificacion
+                                } else {
+                                    historial.setTipo(2);//mas de una modificacion
+                                }
 
-                        //verificacion si es la primera modificarion, se agrega cero (inicial) al tipo de modif
-                        //por default la lista historial contiene 1 registro (el registro actual)
-                        List<Historial> historialList = Controller.getDaoSession().getHistorialDao().loadAll();
-                        if (historialList.isEmpty()) {
-                            historial.setTipo(1);//una modificacion
-                        } else {
-                            historial.setTipo(2);//mas de una modificacion
-                        }
+                                Controller.getDaoSession().getHistorialDao().insert(historial);
 
-                        Controller.getDaoSession().getHistorialDao().insert(historial);
+                                Conteo conteoAEditar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                                conteoAEditar.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
+                                conteoAEditar.setObservacion(txtObservacion.getText().toString());
+                                conteoAEditar.setFecharegistro(fechaActual());
+                                conteoAEditar.setEstado(1);//modificacion
+                                Controller.getDaoSession().update(conteoAEditar);
 
-                        //3:guardar objeto nuevo en tabla conteo
-                        if (validarCantidad(tilCantidad.getEditText().getText().toString())) {
-                            Conteo conteoAEditar = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
-                            conteoAEditar.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
-                            conteoAEditar.setObservacion(txtObservacion.getText().toString());
-                            conteoAEditar.setFecharegistro(fechaActual());
-                            conteoAEditar.setEstado(1);//modificacion
-                            Controller.getDaoSession().update(conteoAEditar);
+                                //4:actualizacion de la vista
+                                viewHolder.lblCantidad.setText(txtCantidad.getText().toString());
+                                viewHolder.lblFechaRegistro.setText(fechaActual());
 
-                            //4:actualizacion de la vista
+                                //Actualizacion totalConteo ActionBar
+                                ConteoDif conteos = new ConteoDif();
+                                List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
+                                int nuevoTotal = 0;
+                                for (int i = 0; i < listarNuevoTotal.size(); i++) {
+                                    nuevoTotal += listarNuevoTotal.get(i).getCantidad();
+                                }
+                                conteos.actualizarConteoActionBar(nuevoTotal);
 
-                            viewHolder.lblCantidad.setText(txtCantidad.getText().toString());
-                            viewHolder.lblFechaRegistro.setText(fechaActual());
-
-                            //Actualizacion totalConteo ActionBar
-                            ConteoDif conteos = new ConteoDif();
-                            List<Conteo> listarNuevoTotal = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Producto_id.eq(idProducto)).where(ConteoDao.Properties.Estado.notEq(-1)).list();
-                            int nuevoTotal = 0;
-                            for (int i = 0; i < listarNuevoTotal.size(); i++) {
-                                nuevoTotal += listarNuevoTotal.get(i).getCantidad();
-                            }
-                            conteos.actualizarConteoActionBar(nuevoTotal);
-
-                            dialog.dismiss();
-                            Snackbar.make(view, "Conteo modificado", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
-                        } else {
-                            Snackbar.make(view, "No se ingresó un conteo válido. No se modificó", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
-                        }
-
-                        mItemManger.closeAllItems();
-
-                    }
-
-                });
-
-                dialogModificar.setNegativeButton("Cancelar",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Toast.makeText(mContext,"Cantidad modificada", Toast.LENGTH_SHORT).show();
-                                mItemManger.closeAllItems();
                                 dialog.dismiss();
+                                Snackbar.make(view, "Conteo modificado", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
+                            } else {
+                                Snackbar.make(view, "No se ingresó un conteo válido. No se modificó", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
                             }
 
-                        });
-                dialogModificar.show();
+                            mItemManger.closeAllItems();
+
+                        }
+
+                    });
+
+                    dialogModificar.setNegativeButton("Cancelar",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Toast.makeText(mContext,"Cantidad modificada", Toast.LENGTH_SHORT).show();
+                                    mItemManger.closeAllItems();
+                                    dialog.dismiss();
+                                }
+
+                            });
+                    dialogModificar.show();
 
 
+                } else {
+                    Snackbar.make(view, "Este registro ya se encuentra validado...", Snackbar.LENGTH_LONG)
+                            .setActionTextColor(view.getResources().getColor(R.color.colorPrimary))
+                            .setAction("Volver a validar", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Conteo conteo=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(conteoList.get(position).getId())).unique();
+                                    conteo.setValidado(0);
+                                    Controller.getDaoSession().getConteoDao().update(conteo);
+                                    viewHolder.lblEstado.setText("Por validar");
+                                }
+                            })
+                            .show();
+                    mItemManger.closeAllItems();
+                    mItemManger.closeAllItems();
+                }
             }
-
 
         });
 
@@ -342,8 +353,8 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
         // mItemManger is member in RecyclerSwipeAdapter Class
         mItemManger.bindView(viewHolder.itemView, position);
 
-    }
 
+    }
     @Override
     public int getItemCount() {
         return conteoList.size();
@@ -407,12 +418,23 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
         return formato.format(hoy);
     }
 
-    private boolean validarCantidad(String cantidadIngresada) {
+    private boolean validarCantidadVacia(String cantidadIngresada) {
         if (cantidadIngresada.trim().length() == 0) {
             tilCantidad.setError("Ingresar una cantidad válida");
             return false;
         } else {
             tilCantidad.setError(null);
+        }
+
+        return true;
+    }
+
+    private boolean validarCantidadDiferente(String cantidadIngresada) {
+        if (Operaciones.buscarConteo(idConteo, idProducto)==Integer.parseInt(cantidadIngresada.trim())) {
+            //tilCantidad.setError("Ingresar una cantidad válida");
+            return false;
+        } else {
+            //tilCantidad.setError(null);
         }
 
         return true;

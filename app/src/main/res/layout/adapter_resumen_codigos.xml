@@ -5,11 +5,20 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/txtId"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:text="Id"/>
+
+    <TextView
         android:id="@+id/txtCodigo"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:layout_width="100dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
         android:text="Código"/>
 
     <TextView
@@ -18,16 +27,16 @@
         android:layout_marginBottom="10dp"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="5dp"
         android:text="Zona"/>
 
     <TextView
         android:id="@+id/txtTotal"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="10dp"
         android:text="total registrado"/>
 
 </LinearLayout>

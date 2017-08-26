@@ -16,11 +16,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/txtTipo"
         android:layout_marginLeft="5dp"
-
+        android:textColor="@color/colorPrimary"
         android:textSize="15sp"
         android:layout_marginTop="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-
         android:text="tipo" />
     </LinearLayout>
 
@@ -42,7 +41,7 @@
             android:text="Cantidad"
             android:id="@+id/txtConteo"
             android:textSize="18sp"
-            android:textColor="#f65034"
+            android:textColor="@color/colorGreyDarken_2"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/txtTipo"
             android:layout_toEndOf="@+id/txtTipo" />
@@ -53,7 +52,7 @@
             android:layout_marginLeft="5dp"
             android:text="unidades"
             android:textSize="15sp"
-            android:textColor="#f65034"
+            android:textColor="@color/colorGreyDarken_2"
             android:layout_alignParentTop="true"
             />
     </LinearLayout>

@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ public class ConteoInv extends AppCompatActivity implements View.OnClickListener
         //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar_principal);
         //setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(0);//elevacion de actbar
 
         producto = Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Seleccionado.eq(1)).unique();//producto seleccionado
         Zona zona = Controller.getDaoSession().getZonaDao().queryBuilder().where(ZonaDao.Properties.Id.eq(producto.getZona_id())).unique();

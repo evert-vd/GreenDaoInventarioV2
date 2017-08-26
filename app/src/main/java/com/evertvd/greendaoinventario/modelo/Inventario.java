@@ -26,7 +26,8 @@ public class Inventario {
     private Long id;
     private Integer numinventario;
     private Integer numequipo;
-    private String fecha;
+    private String fechaCreacion;
+    private String fechaCierre;
     private Integer estado;
     private Integer contexto;
 
@@ -69,11 +70,12 @@ public class Inventario {
     }
 
     @Generated
-    public Inventario(Long id, Integer numinventario, Integer numequipo, String fecha, Integer estado, Integer contexto, Long empresa_id) {
+    public Inventario(Long id, Integer numinventario, Integer numequipo, String fechaCreacion, String fechaCierre, Integer estado, Integer contexto, Long empresa_id) {
         this.id = id;
         this.numinventario = numinventario;
         this.numequipo = numequipo;
-        this.fecha = fecha;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaCierre = fechaCierre;
         this.estado = estado;
         this.contexto = contexto;
         this.empresa_id = empresa_id;
@@ -110,12 +112,20 @@ public class Inventario {
         this.numequipo = numequipo;
     }
 
-    public String getFecha() {
-        return fecha;
+    public String getFechaCreacion() {
+        return fechaCreacion;
     }
 
-    public void setFecha(String fecha) {
-        this.fecha = fecha;
+    public void setFechaCreacion(String fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getFechaCierre() {
+        return fechaCierre;
+    }
+
+    public void setFechaCierre(String fechaCierre) {
+        this.fechaCierre = fechaCierre;
     }
 
     public Integer getEstado() {
