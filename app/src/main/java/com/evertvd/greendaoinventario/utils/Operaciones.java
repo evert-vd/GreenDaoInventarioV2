@@ -107,4 +107,8 @@ public class Operaciones {
            return formato.format(hoy);
        }
 
+       public static int aleatorio(){
+           return (int)(Math.random()*(999-100+1)+100);
+       }
+
 }

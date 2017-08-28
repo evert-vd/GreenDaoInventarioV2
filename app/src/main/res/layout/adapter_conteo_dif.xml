@@ -41,8 +41,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_menu_delete"
-            android:background="@color/colorRed"
+            android:src="@drawable/ic_menu_create"
+            android:background="@color/colorGreen"
             android:tint="@color/colorWhite"
             android:gravity="center"
             android:text="Edit" />

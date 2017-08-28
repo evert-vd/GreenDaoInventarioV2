@@ -31,11 +31,11 @@ import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
+import com.evertvd.greendaoinventario.utils.Operaciones;
 import com.evertvd.greendaoinventario.vista.fragments.FrmZonasDiferencia;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Fragmento con un diálogo personalizado
@@ -47,11 +47,9 @@ public class DialogCierreInventario extends DialogFragment implements View.OnCli
     private TextView tvCodigoAleatorio;
     private TextInputLayout tilCodigo;
     private MenuItem menuDiferencia;
-    //MetodosAuxiliares metodosAuxiliares;
 
     public DialogCierreInventario() {
-        //this.idProducto=idProducto;
-        //metodosAuxiliares=new MetodosAuxiliares();
+
     }
 
 
@@ -79,7 +77,7 @@ public class DialogCierreInventario extends DialogFragment implements View.OnCli
         //View v = inflater.inflate(R.layout.dialogo_registrar_conteo, null);
 
         tvCodigoAleatorio = (TextView) view.findViewById(R.id.tvCodAleatorio2);
-        tvCodigoAleatorio.setText("12");
+        tvCodigoAleatorio.setText(String.valueOf(Operaciones.aleatorio()));
 
         etCodigo = (EditText) view.findViewById(R.id.etCodigo);
 

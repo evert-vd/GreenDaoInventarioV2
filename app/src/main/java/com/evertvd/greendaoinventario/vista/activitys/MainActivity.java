@@ -1,7 +1,9 @@
 package com.evertvd.greendaoinventario.vista.activitys;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,12 +13,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -272,19 +276,11 @@ public class MainActivity extends AppCompatActivity
                 //fragment = new FrmNuevoProducto();
                 break;
 
-            //}
 
-
-            //break;
-
-            //} else if (id == R.id.nav_iniciarSesion) {
             case R.id.nav_iniciarSesion:
                 break;
             case R.id.nav_cerrarSesion:
-                Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-                //Log.e("Inventario actual", String.valueOf(inventario.getId()));
-                Controller.getDaoSession().getInventarioDao().delete(inventario);
-                startActivity(new Intent(this, Login.class));
+                mensajeConfirmacionCierre();
                 break;
             default:
 
@@ -378,6 +374,37 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void mensajeConfirmacionCierre(){
+        AlertDialog.Builder confirmar = new AlertDialog.Builder(this);
+        confirmar.setMessage("¿Seguro que desea finalizar el inventario"+inventario.getNuminventario()+"?")
+                .setTitle("Advertencia")
+                .setCancelable(false)
+                .setNegativeButton("Cancelar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //dialog.cancel();
+                                dialog.dismiss();
+                            }
+                        })
+                .setPositiveButton("Aceptar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+                                //Log.e("Inventario actual", String.valueOf(inventario.getId()));
+                                Controller.getDaoSession().getInventarioDao().delete(inventario);
+                                startActivity(new Intent(getApplicationContext(), Login.class));
+                            }
+                        });
+        AlertDialog alertDialog = confirmar.create();
+        alertDialog.show();
+
+        Button cancel = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        if(cancel != null)
+            //b.setBackgroundColor(Color.CYAN);
+            cancel.setTextColor(getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del fialogo
+
+    }
 
 
 

@@ -18,5 +18,6 @@
     <color name="colorOrange">#FF9800</color>
     <color name="colorGreyLighten_3">#EEEEEE</color>
     <color name="colorGreyDarken_2">#616161</color>
+    <color name="colorGreyLighten_1">#bdbdbd</color>
 
 </resources>

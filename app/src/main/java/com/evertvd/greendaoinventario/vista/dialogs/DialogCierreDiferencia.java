@@ -82,7 +82,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
         //View v = inflater.inflate(R.layout.dialogo_registrar_conteo, null);
 
         tvCodigoAleatorio = (TextView) view.findViewById(R.id.tvCodAleatorio2);
-        tvCodigoAleatorio.setText("12");
+        tvCodigoAleatorio.setText(String.valueOf(Operaciones.aleatorio()));
 
         etCodigo = (EditText) view.findViewById(R.id.etCodigo);
 

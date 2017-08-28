@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -188,8 +189,12 @@ public class FileInterno extends ListActivity {
 
                                 }
                             });
-            AlertDialog alert = cargarArchivo.create();
-            alert.show();
+            AlertDialog alertDialog = cargarArchivo.create();
+            alertDialog.show();
+            Button cancel = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+            if(cancel != null)
+                //b.setBackgroundColor(Color.CYAN);
+                cancel.setTextColor(getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del fialogo
         }
     }
 

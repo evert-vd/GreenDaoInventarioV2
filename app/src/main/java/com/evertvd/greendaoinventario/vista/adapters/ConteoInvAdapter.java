@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -206,7 +207,16 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                                 //dialog.dismiss();
                             }
                         });
-                builder.show();
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+                Button cancel = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                if(cancel != null){
+                    //b.setBackgroundColor(Color.CYAN);
+                    cancel.setTextColor(v.getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del fialogo
+            }
+
             }
 
         });
@@ -311,8 +321,15 @@ public class ConteoInvAdapter extends RecyclerSwipeAdapter<ConteoInvAdapter.Simp
                             }
 
                         });
-                dialogModificar.show();
 
+                AlertDialog alertDialog = dialogModificar.create();
+                alertDialog.show();
+
+                Button cancel = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                if(cancel != null){
+                    //b.setBackgroundColor(Color.CYAN);
+                    cancel.setTextColor(v.getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del fialogo
+                }
 
             }
 

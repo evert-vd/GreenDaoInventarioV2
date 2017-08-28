@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -196,12 +197,12 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
                             .show();
                     mItemManger.closeAllItems();
                 }else{
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle("Validar registro");
-                    builder.setCancelable(false);
-                    builder.setMessage("¿Seguro que desea validar este registro?");
+                    final AlertDialog.Builder dialogValidar = new AlertDialog.Builder(mContext);
+                    dialogValidar.setTitle("Validar registro");
+                    dialogValidar.setCancelable(false);
+                    dialogValidar.setMessage("¿Seguro que desea validar este registro?");
 
-                    builder.setPositiveButton("Validar",
+                    dialogValidar.setPositiveButton("Validar",
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -224,7 +225,15 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
                                             //dialog.dismiss();
                                         }
                                     });
-                    builder.show();
+
+                    AlertDialog alertDialog = dialogValidar.create();
+                    alertDialog.show();
+
+                    Button cancel = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    if(cancel != null){
+                        //b.setBackgroundColor(Color.CYAN);
+                        cancel.setTextColor(v.getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del fialogo
+                    }
                 }
             }
 
@@ -326,12 +335,19 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
                                 }
 
                             });
-                    dialogModificar.show();
+                    AlertDialog alertDialog = dialogModificar.create();
+                    alertDialog.show();
+
+                    Button cancel = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    if(cancel != null){
+                        //b.setBackgroundColor(Color.CYAN);
+                        cancel.setTextColor(v.getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del dialogo
+                    };
 
 
                 } else {
                     Snackbar.make(view, "Este registro ya se encuentra validado...", Snackbar.LENGTH_LONG)
-                            .setActionTextColor(view.getResources().getColor(R.color.colorPrimary))
+                            .setActionTextColor(view.getResources().getColor(R.color.colorOrange))
                             .setAction("Volver a validar", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -343,7 +359,7 @@ public class ConteoDifAdapter extends RecyclerSwipeAdapter<ConteoDifAdapter.Simp
                             })
                             .show();
                     mItemManger.closeAllItems();
-                    mItemManger.closeAllItems();
+
                 }
             }
 

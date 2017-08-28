@@ -72,6 +72,7 @@ public class DialogEnviarEmail extends DialogFragment {
                         compartirPorEmail(archivosAdjuntos);
                     }
                 });
+
         builder.setNegativeButton("cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
