@@ -37,10 +37,8 @@ public class Reporte {
 
         Inventario inventario= Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         QueryBuilder<Producto> queryBuilder=Controller.getDaoSession().getProductoDao().queryBuilder();
-        queryBuilder.where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()));
+        queryBuilder.where(ProductoDao.Properties.Inventario_id.eq(inventario.getId())).where(ProductoDao.Properties.Tipo.eq("SISTEMA"));
         List<Producto> productoList=queryBuilder.list();
-
-
 
         if (ComprobarSD.comprobarMemoriaSD()){
             try {
@@ -61,13 +59,8 @@ public class Reporte {
                 OutputStreamWriter fout =
                         new OutputStreamWriter(
                                 new FileOutputStream(f));
-                //String cadena="";
-                //fout.write("REPORTE RESUMIDO "+hoyFormato.toUpperCase());
-                //fout.write("\n");
-                //fout.write("ZONA, CODIGO, CANTIDAD, DESCRIPCION");
-                //fout.write("\n");
+
                 for (int i=0; i<productoList.size(); i++){
-                    //cadena+=listProducto.get(i).getZona()+","+listProducto.get(i).getCodigo()+","+listProducto.get(i).getDescripcion()+","+listProducto.get(i).getCantidad()+"\n";
                     fout.write(productoList.get(i).getZona().toString());
                     Log.e("prueba",productoList.get(i).getZona().toString());
                     fout.write(",");
@@ -79,11 +72,7 @@ public class Reporte {
                     fout.write(String.valueOf(cantidad));
                     fout.write("\n");
                 }
-                //fout.write(cadena);
                 fout.close();
-                //Toast.makeText(context, "Reporte Resumido exportado correctamente", Toast.LENGTH_SHORT).show();
-
-
             }
             catch (Exception ex)
             {
@@ -101,60 +90,15 @@ public class Reporte {
     public void Detallado(Context context, String nombreCarpeta){
         Inventario inventario= Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
 
-        /*
-        QueryBuilder<Conteo> queryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder();
-        queryBuilder.join(ProductoDao.Properties.Id, Producto.class)
-                .where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()));
-        List<Conteo> productoList=queryBuilder.list();
 
-        //QueryBuilder<Conteo> conteoQueryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder();
-        //conteoQueryBuilder.join(Producto.class, ProductoDao.Properties.Id);
-        //List<Conteo> outputPersonList = Controller.getDaoSession().getConteoDao().queryDeep("WHERE T0._ID=T.PRODUCTO_ID",null);
-        List<Producto> productoList = Controller.getDaoSession().getProductoDao().queryDeep("LEFT JOIN CONTEO C ON T._id=C.PRODUCTO_ID WHERE T.INVENTARIO_ID="+inventario.getId(),null);
-
-        for (int i=0; i<productoList.size();i++){
-            Log.e("detallado1",String.valueOf(productoList.get(i).getCodigo()));
-        }
-        */
         List<Producto> productoSistema=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
-                .where(ProductoDao.Properties.Tipo.eq("Sistema")).list();
-        Log.e("tamaño",String.valueOf(productoSistema.size()));
-        /*
-        for(int i=0;i<productoList.size();i++){
-            List<Conteo>conteoList=productoList.get(i).getConteoList();
-            if(!productoList.get(i).getConteoList().isEmpty()){
-            for(int j=0;j<conteoList.size();j++){
-                Log.e("cod",String.valueOf(productoList.get(i).getCodigo())+" cont:"+ productoList.get(i).getConteoList().get(j).getCantidad());
-                List<Historial> historialList=conteoList.get(j).getHistorialList();
-                if(!conteoList.get(j).getHistorialList().isEmpty()){
-                    for(int k=0;k<historialList.size();k++){
-                        Log.e("hist",String.valueOf(historialList.get(i).getTipo())+" hit: 0");
-                    }
-
-                }
-
-            }
-            }else{
-                Log.e("cod",String.valueOf(productoList.get(i).getCodigo())+" cont: 0");
-            }
-
-
-        }
-*/
-        /*
-        QueryBuilder<Producto> queryBuilder=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()));
-        queryBuilder.join(Conteo.class, ConteoDao.Properties.Producto_id);
-        List<Producto> productoList=queryBuilder.list();*/
-
+                .where(ProductoDao.Properties.Tipo.eq("SISTEMA")).list();
 
         if (ComprobarSD.comprobarMemoriaSD()){
             try {
                 SimpleDateFormat formato = new SimpleDateFormat("dd-MMMM-yyyy hh:mm aaa");
                 Date hoy = new Date();
                 String hoyFormato = formato.format(hoy);
-                //File rutaSD = Environment.getExternalStorageDirectory(); //Ruta absoluta a la SD
-                //String ruta=rutaSD.getAbsolutePath()+"/Download"; //escribir en directorio Dowload
-
                 File carpeta = context.getExternalFilesDir(nombreCarpeta);//Ruta relativa a la app
                 carpeta.mkdir();
                 String ruta=carpeta.getAbsolutePath();
@@ -251,31 +195,45 @@ public class Reporte {
 
                 /*Producto ingresados desde la aplicacion*/
                  List<Producto> productoAplicacion=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
-                .where(ProductoDao.Properties.Tipo.eq("Aplicacion")).list();
+                .where(ProductoDao.Properties.Tipo.eq("APLICACION")).list();
 
                 if (!productoAplicacion.isEmpty()){
-                    fout.write("Productos que se encuentran fuera del stock del sistema".toUpperCase());
+                    fout.write("Productos que no se encuentran en la data inicial".toUpperCase());
                     fout.write("\n");
-                    fout.write("ZONA, CODIGO,DESCRIPCION,CANTIDAD,OBSERVACION, HISTORIAL");
+                    fout.write("ZONA, CODIGO,DESCRIPCION,CANTIDAD,OBSERVACION");
                     fout.write("\n");
 
                     for (int i=0; i<productoAplicacion.size(); i++){
-                        fout.write(productoAplicacion.get(i).getZona().getNombre());
-                        fout.write(",");
-                        fout.write(productoAplicacion.get(i).getCodigo());
-                        fout.write(",");
-                        fout.write(String.valueOf(productoAplicacion.get(i).getDescripcion()));
-                        fout.write(",");
                         //long j=i;
-                        //fout.write(String.valueOf(Operaciones.buscarConteo(Operaciones.totalConteoProducto1(productoAplicacion.get(i).getId()))));
-                        fout.write(",");
-                        fout.write(String.valueOf(productoAplicacion.get(i).getDescripcion()));
-                        fout.write(",");
-                        //fout.write(String.valueOf(iHistorial.obtenerHistorialCadena(context,listProductoNuevo.get(i).getIdConteo())));
-                        fout.write("\n");
+                        List<Conteo>conteoList=productoAplicacion.get(i).getConteoList();
+                        if(!conteoList.isEmpty()){
+                            for(int j=0; j<conteoList.size(); j++){
+                            fout.write(productoAplicacion.get(i).getZona().getNombre());
+                            fout.write(",");
+                            fout.write(String.valueOf(productoAplicacion.get(i).getCodigo()));
+                            fout.write(",");
+                            fout.write(String.valueOf(productoAplicacion.get(i).getDescripcion()));
+                            fout.write(",");
+                            fout.write(String.valueOf(conteoList.get(j).getCantidad()));
+                            fout.write(",");
+                            fout.write(String.valueOf(conteoList.get(j).getObservacion()));
+                            fout.write("\n");
+                            }
+                        }else{
+                            fout.write(productoAplicacion.get(i).getZona().getNombre());
+                            fout.write(",");
+                            fout.write(String.valueOf(productoAplicacion.get(i).getCodigo()));
+                            fout.write(",");
+                            fout.write(String.valueOf(productoAplicacion.get(i).getDescripcion()));
+                            fout.write(",");
+                            fout.write(String.valueOf(0));
+                            fout.write(",");
+                            fout.write("");
+                            fout.write("\n");
+                        }
+
                     }
                 }
-
 
                 fout.close();
                 //Toast.makeText(context, "Reporte Detallado exportado correctamente", Toast.LENGTH_SHORT).show();

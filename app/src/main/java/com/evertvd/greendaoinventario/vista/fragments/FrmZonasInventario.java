@@ -52,6 +52,7 @@ public class FrmZonasInventario extends Fragment {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
 
+
         txtTitulo = (TextView) view.findViewById(R.id.txtTitulo);
         List<Inventario> inventarioList = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).list();
         for (int i = 0; i < inventarioList.size(); i++) {

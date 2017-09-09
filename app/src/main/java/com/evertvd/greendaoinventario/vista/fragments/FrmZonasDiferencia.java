@@ -114,7 +114,7 @@ public class FrmZonasDiferencia extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.action_diferencia:
-                QueryBuilder<Conteo> conteoQueryBuilder = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0));
+                QueryBuilder<Conteo> conteoQueryBuilder = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0)).where(ConteoDao.Properties.Estado.notEq(-1));
                 Join producto = conteoQueryBuilder.join(ConteoDao.Properties.Producto_id, Producto.class).where(ProductoDao.Properties.Estado.eq(-1));//con diferencia
                 Join invnetario = conteoQueryBuilder.join(producto, ProductoDao.Properties.Inventario_id, Inventario.class, InventarioDao.Properties.Id);
                 invnetario.where(InventarioDao.Properties.Estado.eq(0));
@@ -142,7 +142,7 @@ public class FrmZonasDiferencia extends Fragment {
             break;
 
             case R.id.action_actualizar:
-                QueryBuilder<Conteo> qb = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0));
+                QueryBuilder<Conteo> qb = Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0)).where(ConteoDao.Properties.Estado.notEq(-1));
                 Join producto1 = qb.join(ConteoDao.Properties.Producto_id, Producto.class).where(ProductoDao.Properties.Estado.eq(-1));//con diferencia
                 Join inventario1 = qb.join(producto1, ProductoDao.Properties.Inventario_id, Inventario.class, InventarioDao.Properties.Id);
                 inventario1.where(InventarioDao.Properties.Estado.eq(0));

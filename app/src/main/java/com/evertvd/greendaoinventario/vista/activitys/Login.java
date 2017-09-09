@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -39,9 +41,10 @@ import java.util.List;
 
 public class Login extends AppCompatActivity implements View.OnClickListener {
 
-    private View view;
+
     private Spinner spinnerEmpresa;
     private Button btnIniciarSesion;
+
     private EditText txtNumeroEquipo, txtNombreArchivo;
     private String path, nombreArchivo;
     private static final int SOLICITUD_PERMISO_RW_MEMORY1 = 1;
@@ -94,6 +97,21 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             //startActivity(new Intent(this, MainActivity.class));
             //finish();
             //obtener objeto seleccionado del spinner
+
+            String equipo = txtNumeroEquipo.getText().toString().trim();
+            String nomArchivo = txtNombreArchivo.getText().toString().trim();
+
+            if (TextUtils.isEmpty(equipo)) {
+                Toast.makeText(getApplicationContext(), "Ingresar el nro de equipo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (TextUtils.isEmpty(nomArchivo)){
+                Toast.makeText(getApplicationContext(), "Buscar y selecionar archivo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+
             Empresa empresa = (Empresa) spinnerEmpresa.getSelectedItem();
             if (crearNuevoInventario(nombreArchivo, empresa.getEmpresa())) {
                 List<Inventario> inventarioList = Controller.getDaoSession().getInventarioDao().loadAll();
@@ -101,7 +119,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 for (int i = 0; i < inventarioList.size(); i++) {
                     if (i == inventarioList.size() - 1) {
                         idInventario = inventarioList.get(i).getId();
-                        Log.e("idinvnetaiooo", String.valueOf(idInventario));
+                        //Log.e("idinvnetaiooo", String.valueOf(idInventario));
                         break;
                     }
 
@@ -110,12 +128,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 crearProductos(idInventario);
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
-            } else {
+            } /*else {
                 Toast.makeText(this, "Ocurrió un error e el proceso", Toast.LENGTH_SHORT).show();
             }
+            */
         }
         }catch (Exception e){
             Log.e("ErrorCatch",e.toString());
+            Toast.makeText(this,"El formato de archivo es incorrecto", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -141,6 +161,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        startActivity(new Intent(this,Login.class));
+        //finish();
+    }
 
     private String[] leerArchivoSD(String nombre) {
         ByteArrayOutputStream byteArrayOutputStream = null;
@@ -173,9 +200,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
 
     private boolean crearNuevoInventario(String nombreArchivo, String nombreEmpresa) {
-        Log.e("crearNuevoInv archivo", nombreArchivo);
 
-        try {
+        //try {
             //INV-2-1028-1
             String[] valores = nombreArchivo.split("-");
         /*
@@ -184,6 +210,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         [2]=1028: nro inventario
         [3]=1.csv : nro equipo
         */
+
 
             int codEmpresa = Integer.parseInt(valores[1]);
             int numInventario = Integer.parseInt(valores[2]);
@@ -195,7 +222,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
             Empresa empresa = Controller.getDaoSession().getEmpresaDao().queryBuilder().where(EmpresaDao.Properties.Empresa.eq(nombreEmpresa)).unique();
             if (numEquipo == Integer.parseInt(txtNumeroEquipo.getText().toString()) && empresa.getCodempresa() == codEmpresa) {
-                Toast.makeText(this, "Bienvenido: " + empresa.getCodempresa(), Toast.LENGTH_SHORT).show();
                 Inventario inventario = new Inventario();
                 inventario.setNumequipo(numEquipo);
                 inventario.setNuminventario(numInventario);
@@ -204,21 +230,29 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 inventario.setFechaCreacion(Operaciones.fechaActual());
                 inventario.setEmpresa_id(empresa.getId());
                 Controller.getDaoSession().getInventarioDao().insert(inventario);
+                Toast.makeText(this, "Data cargada correctamente", Toast.LENGTH_SHORT).show();
                 return true;
-            } else if (empresa.getCodempresa() != codEmpresa) {
+                }else if (empresa.getCodempresa() != codEmpresa) {
                 Toast.makeText(this, "Empresa incorrecta", Toast.LENGTH_SHORT).show();
                 return false;
             } else if (numEquipo != Integer.parseInt(txtNumeroEquipo.getText().toString())) {
                 Toast.makeText(this, "Número de equipo incorrecto", Toast.LENGTH_SHORT).show();
                 return false;
+
             } else {
-                Toast.makeText(this, "Formato de archivo incorrecto ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Formato de archivo incorrecto", Toast.LENGTH_SHORT).show();
                 return false;
             }
-        } catch (Exception e) {
+
+
+
+
+
+        /*} catch (Exception e) {
             Toast.makeText(this, "Error. Verificar datos o formato de arhivo incorrecto", Toast.LENGTH_SHORT).show();
             return false;
         }
+        */
 
     }
 
@@ -284,7 +318,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             producto.setDescripcion(linea[2]);
             //desencripta.stockDesencriptado(Double.parseDouble(linea[3]),Integer.parseInt(linea[1]));
             producto.setStock(desencripta.stockDesencriptado(Double.parseDouble(linea[3]), Integer.parseInt(linea[1])));
-            producto.setTipo("Sistema");
+            producto.setTipo("sistema".toUpperCase());
             producto.setEstado(-1);//con diferencia;
             producto.setSeleccionado(0);//deseleccionado;
             producto.setInventario_id(idInventario);
@@ -305,10 +339,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             Manifest.permission.READ_EXTERNAL_STORAGE}, SOLICITUD_PERMISO_RW_MEMORY1);
         }
     }
-
-
-
-
 
     /*
     @Override

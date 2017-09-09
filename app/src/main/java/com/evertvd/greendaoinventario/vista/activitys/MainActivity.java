@@ -128,31 +128,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (inventario != null) {
-            FragmentManager fragmentManager=getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-            if (inventario.getContexto() == 1) {
-                abrirContextoInventario(fragmentTransaction);
-                menuInventario.setChecked(true);
-                menuDiferencia.setEnabled(false);
-                menuResumen.setEnabled(false);
-
-            } else if (inventario.getContexto() == 2) {
-                abrirContextoDiferencias(fragmentTransaction);
-                menuDiferencia.setChecked(true);
-                menuDiferencia.setEnabled(true);
-                menuInventario.setEnabled(false);
-                menuResumen.setEnabled(false);
-            } else if (inventario.getContexto() == 3) {
-                abrirContextoResumen(fragmentTransaction);
-                menuResumen.setChecked(true);
-                menuDiferencia.setEnabled(true);
-                menuDiferencia.setEnabled(false);
-                menuInventario.setEnabled(false);
-                menuNuevoProducto.setEnabled(false);
-            } else {
-                startActivity(new Intent(this, Login.class));
-                finish();
-            }
+            abrirContexto();
 
         } else {
             List<Empresa> empresaList = Controller.getDaoSession().getEmpresaDao().loadAll();
@@ -174,13 +150,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-           // super.onBackPressed();
+           super.onBackPressed();
+            finish();
+            startActivity(new Intent(this,MainActivity.class));
         }
     }
 /*
@@ -236,6 +216,7 @@ public class MainActivity extends AppCompatActivity
                 FrmZonasInventario frmZonasInventario = new FrmZonasInventario();
                 fragmentTransaction.replace(R.id.contenedor, frmZonasInventario);
                 fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                setTitle("Inventario "+inventario.getNuminventario());
                 fragmentTransaction.commit();
                 //fragment = new FrmZonasInventario();
                 break;
@@ -247,6 +228,7 @@ public class MainActivity extends AppCompatActivity
                 FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
                 fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
                 fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                setTitle("Diferencias Inv. "+inventario.getNuminventario());
                 fragmentTransaction.commit();
                 //fragment = new FrmZonasDiferencia();
                 break;
@@ -257,6 +239,7 @@ public class MainActivity extends AppCompatActivity
                 FrmResumen frmResumen = new FrmResumen();
                 fragmentTransaction.replace(R.id.contenedor, frmResumen);
                 fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                setTitle("Resumen Inv. "+inventario.getNuminventario());
                 fragmentTransaction.commit();
                 //fragment = new FrmResumen();
                 break;
@@ -268,7 +251,7 @@ public class MainActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.contenedor, listarNuevo);
                 //Animacion al abrir el nuevo fragment
                  fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-
+                setTitle("Registrar Producto");
                 //Regresa al fragment anterior con la tecla atras
                 //transaction.addToBackStack(null);
                 //getSupportActionBar().setTitle(menuItem.getTitle());
@@ -283,34 +266,12 @@ public class MainActivity extends AppCompatActivity
                 mensajeConfirmacionCierre();
                 break;
             default:
-
-                startActivity(new Intent(this, Login.class));
                 finish();
+                startActivity(new Intent(this, Login.class));
+
                 break;
 
 
-        /*
-        if(id==R.id.nav_inventario) {
-            fragment = new FrmZonasInventario();
-
-        }else if(id==R.id.nav_diferencias) {
-            fragment=new FrmZonasDiferencia();
-        }else if(id==R.id.nav_resumen) {
-            fragment=new FrmResumen();
-        }else if(id==R.id.nav_nuevo_Producto){
-            fragment=new FrmNuevoProducto();
-        }else if(id==R.id.nav_cerrarSesion){
-            Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-            //Log.e("Inventario actual", String.valueOf(inventario.getId()));
-            Controller.getDaoSession().getInventarioDao().delete(inventario);
-            startActivity(new Intent(this, Login.class));
-        }
-                // } else if (id == R.id.nav_cerrarSesion) {
-*/
-
-            //FragmentTransaction transaction = fragmentManager.beginTransaction();
-            //transaction.replace(R.id.contenedor, fragment);
-            //transaction.commit();
         }
 
 
@@ -321,6 +282,35 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void abrirContexto() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (inventario.getContexto() == 1) {
+            menuInventario.setChecked(true);
+            menuDiferencia.setEnabled(false);
+            menuResumen.setEnabled(false);
+            abrirContextoInventario(fragmentTransaction);
+
+        } else if (inventario.getContexto() == 2) {
+            menuDiferencia.setChecked(true);
+            menuDiferencia.setEnabled(true);
+            menuInventario.setEnabled(false);
+            menuResumen.setEnabled(false);
+            abrirContextoDiferencias(fragmentTransaction);
+        } else if (inventario.getContexto() == 3) {
+            menuResumen.setChecked(true);
+            menuDiferencia.setEnabled(true);
+            menuDiferencia.setEnabled(false);
+            menuInventario.setEnabled(false);
+            menuNuevoProducto.setEnabled(false);
+            abrirContextoResumen(fragmentTransaction);
+        } else {
+            finish();
+            startActivity(new Intent(this, Login.class));
+
+        }
+    }
+
     private void abrirContextoInventario(FragmentTransaction fragmentTransaction ) {
         //FragmentManager fragmentManager = getFragmentManager();
         //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -328,6 +318,7 @@ public class MainActivity extends AppCompatActivity
         // and add the transaction to the back stack
         FrmZonasInventario fragment = new FrmZonasInventario();
         fragmentTransaction.replace(R.id.contenedor, fragment);
+        setTitle("Inventario "+inventario.getNuminventario());
         fragmentTransaction.commit();
 
     }
@@ -338,6 +329,7 @@ public class MainActivity extends AppCompatActivity
 
             FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
             fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
+            setTitle("Diferencias Inv. "+inventario.getNuminventario());
             fragmentTransaction.commit();
 
 
@@ -346,6 +338,7 @@ public class MainActivity extends AppCompatActivity
     private void abrirContextoResumen(FragmentTransaction fragmentTransaction) {
                   FrmResumen frmResumen = new FrmResumen();
             fragmentTransaction.replace(R.id.contenedor, frmResumen);
+        setTitle("Resumen Inv. "+inventario.getNuminventario());
             fragmentTransaction.commit();
 
     }
@@ -376,7 +369,7 @@ public class MainActivity extends AppCompatActivity
 
     private void mensajeConfirmacionCierre(){
         AlertDialog.Builder confirmar = new AlertDialog.Builder(this);
-        confirmar.setMessage("¿Seguro que desea finalizar el inventario"+inventario.getNuminventario()+"?")
+        confirmar.setMessage("¿Seguro que desea finalizar el inventario "+inventario.getNuminventario()+"?")
                 .setTitle("Advertencia")
                 .setCancelable(false)
                 .setNegativeButton("Cancelar",

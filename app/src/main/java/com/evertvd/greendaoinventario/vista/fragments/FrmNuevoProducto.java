@@ -54,7 +54,7 @@ public class FrmNuevoProducto extends Fragment implements View.OnClickListener{
 
         Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         listaNuevoProducto=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
-                .where(ProductoDao.Properties.Tipo.notEq("Sistema")).list();
+                .where(ProductoDao.Properties.Tipo.notEq("SISTEMA")).list();
 
         // Layout Managers:
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

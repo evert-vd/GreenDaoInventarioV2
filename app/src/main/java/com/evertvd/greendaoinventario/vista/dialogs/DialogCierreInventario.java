@@ -146,10 +146,13 @@ public class DialogCierreInventario extends DialogFragment implements View.OnCli
     }
 
     private void abrirFragmentDiferencia() {
+        Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+
         FragmentManager fragmentManager=getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         FrmZonasDiferencia frmZonasDiferencia=new FrmZonasDiferencia();
         fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
+        getActivity().setTitle(menuDiferencia.getTitle()+" Inv "+inventario.getNuminventario());
         fragmentTransaction.commit();
 
     }

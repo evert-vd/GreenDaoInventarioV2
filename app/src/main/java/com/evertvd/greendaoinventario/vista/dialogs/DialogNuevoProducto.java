@@ -193,7 +193,7 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
         producto.setDescripcion(descripcion);
         //producto.setCodigo(txtCodigo.getText().toString().toUpperCase());
         producto.setStock(0.0);
-        producto.setTipo("aplicación");
+        producto.setTipo("aplicacion".toUpperCase());
         producto.setEstado(-1);
         producto.setInventario_id(inventario.getId());
         producto.setZona_id(zona_has_inventario.getZona_id2());

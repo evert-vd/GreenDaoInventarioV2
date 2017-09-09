@@ -42,7 +42,6 @@ public class ProductoDif extends AppCompatActivity implements SearchView.OnQuery
         Zona zonaSeleccionada = Controller.getDaoSession().getZonaDao().queryBuilder().where(ZonaDao.Properties.Estado.eq(1)).unique();
         Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         //Log.e("zonaSeleccionada", String.valueOf(zonaSeleccionada.getZona()));
-
         setTitle("Dif. en la zona " + zonaSeleccionada.getNombre());
         //setSupportActionBar(myToolbar);
         //flecha en el actionbar para regresar

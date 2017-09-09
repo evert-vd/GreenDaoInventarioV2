@@ -9,7 +9,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.evertvd.greendaoinventario.vista.Login">
+    android:background="@color/colorGreyLighten_3"
+    tools:context="com.evertvd.greendaoinventario.vista.activitys.Login">
 
 
     <LinearLayout
@@ -24,7 +25,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:focusableInTouchMode="true"
-            android:padding="20dp">
+            android:padding="10dp">
 
 
             <LinearLayout
@@ -34,6 +35,8 @@
 
                 <ImageView
                     android:layout_width="wrap_content"
+                    android:src="@drawable/grupomolicom"
+                    android:layout_gravity="center"
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
@@ -45,8 +48,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/colorPrimary"
                     android:text="GRUPO MOLICOM" />
             </LinearLayout>
 
@@ -66,7 +70,10 @@
 
                     <ImageView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:tint="@color/colorPrimary"
+                        android:src="@drawable/ic_menu_store"/>
+
 
                     <Spinner
                         android:layout_marginLeft="10dp"
@@ -74,9 +81,8 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/spinnerEmpresa"
                         style="@android:style/Widget.Holo.Light.Spinner"
-                        android:spinnerMode="dialog"
+                        android:spinnerMode="dialog"/>
 
-                        />
 
                 </LinearLayout>
 
@@ -88,7 +94,10 @@
 
                     <ImageView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:tint="@color/colorPrimary"
+                        android:src="@drawable/ic_menu_group"/>
+
 
                     <EditText
                         android:id="@+id/txtNumEquipo"
@@ -96,9 +105,10 @@
                         android:inputType="number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColorHint="#CFD8DC"
+                        android:textColorHint="@color/colorGreyDarken_2"
                         android:hint="Número de equipo"
                         android:textSize="18sp" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -109,20 +119,22 @@
 
                     <ImageView
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:tint="@color/colorPrimary"
+                        android:src="@drawable/ic_menu_system"/>
 
                     <EditText
                         android:id="@+id/txtNombreArchivo"
                         android:layout_marginLeft="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColorHint="#CFD8DC"
+                        android:textColorHint="@color/colorGreyDarken_2"
                         android:hint="Buscar archivo"
                         android:focusable="false"
+
                         android:textSize="18sp" />
+
                 </LinearLayout>
-
-
             </LinearLayout>
 
 
@@ -137,7 +149,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textStyle="bold"
-                    android:background="@color/colorPrimary"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:textColor="@color/colorPrimary"
                     android:text="Iniciar Inventario" />
             </LinearLayout>
 

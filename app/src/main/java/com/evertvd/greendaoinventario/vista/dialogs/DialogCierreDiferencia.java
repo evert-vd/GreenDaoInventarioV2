@@ -48,7 +48,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
     private EditText etCodigo;
     private TextView tvCodigoAleatorio;
     private TextInputLayout tilCodigo;
-    private MenuItem menuDiferencia;
+    private MenuItem menuResumen;
     View view;
     //MetodosAuxiliares metodosAuxiliares;
 
@@ -130,14 +130,14 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
         NavigationView navView = (NavigationView)getActivity().findViewById(R.id.nav_view);
         Menu menuNav = navView.getMenu();
 
-        menuDiferencia = menuNav.findItem(R.id.nav_diferencias);
+        MenuItem menuDiferencia = menuNav.findItem(R.id.nav_diferencias);
         menuDiferencia.setEnabled(false);
 
 
         MenuItem menuInventario = menuNav.findItem(R.id.nav_inventario);
         menuInventario.setEnabled(false);
 
-        MenuItem menuResumen= menuNav.findItem(R.id.nav_resumen);
+        menuResumen= menuNav.findItem(R.id.nav_resumen);
         menuResumen.setEnabled(true);
         menuResumen.setChecked(true);
 
@@ -148,13 +148,14 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
 
     }
 
-    private void abrirFragmentDiferencia() {
+    private void abrirFragmentResumen() {
         //tabLayout.setVisibility(View.VISIBLE);
-
+        Inventario inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         FrmResumen frmResumen=new FrmResumen();
         fragmentTransaction.replace(R.id.contenedor, frmResumen);
+        getActivity().setTitle(menuResumen.getTitle()+" Inv. "+inventario.getNuminventario());
         fragmentTransaction.commit();
 
 
@@ -257,7 +258,7 @@ public class DialogCierreDiferencia extends DialogFragment implements View.OnCli
             habilitarMenus();
             asignarContextoResumen();
             calcularDiferencias();
-            abrirFragmentDiferencia();
+            abrirFragmentResumen();
 
         }
     }

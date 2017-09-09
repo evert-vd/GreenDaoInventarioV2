@@ -70,11 +70,12 @@ public class DialogValidarConteo extends DialogFragment implements View.OnClickL
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_validar_conteo, null);
 
-        QueryBuilder<Conteo> conteoQueryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0));//por validar
+        QueryBuilder<Conteo> conteoQueryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0)).where(ConteoDao.Properties.Estado.notEq(-1));//por validar, no eliminado
         Join producto=conteoQueryBuilder.join(ConteoDao.Properties.Producto_id, Producto.class).where(ProductoDao.Properties.Estado.eq(-1));//con diferencia;
         Join inventario=conteoQueryBuilder.join(producto, ProductoDao.Properties.Inventario_id, Inventario.class,InventarioDao.Properties.Id);//inventario activado
         inventario.where(InventarioDao.Properties.Estado.eq(0));
         List<Conteo> conteoList=conteoQueryBuilder.list();
+
 
         ValidarConteoAdapter adapter = new ValidarConteoAdapter(getActivity(), conteoList);
 
