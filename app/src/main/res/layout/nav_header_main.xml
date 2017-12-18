@@ -22,17 +22,6 @@
         app:civ_border_width="2dp"
         app:civ_border_color="@color/colorWhite"/>
 
-    <!--
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@android:drawable/sym_def_app_icon" />
-
-
--->
-
 
         <TextView
             android:id="@+id/txtNumInventario"
@@ -42,8 +31,6 @@
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:text="inventario"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-
 
     <LinearLayout
         android:layout_width="wrap_content"

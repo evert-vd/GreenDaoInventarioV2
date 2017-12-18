@@ -14,12 +14,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.evertvd.greendaoinventario.R;
-import com.evertvd.greendaoinventario.controlador.Controller;
+import com.evertvd.greendaoinventario.interfaces.IInventario;
 import com.evertvd.greendaoinventario.modelo.Inventario;
-import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteInventario;
+import com.evertvd.greendaoinventario.utils.MainDirectorios;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,10 +40,10 @@ public class DialogEnviarEmail extends DialogFragment {
 
        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
         builder.setTitle("Seleccionar Reportes");
-        int totalArchivos = obtenerDirectorioDownload().length;
+        int totalArchivos = obtenerDirectorioApp().length;
         boolean[] cantSeleccionado = new boolean[totalArchivos];
 
-        builder.setMultiChoiceItems(obtenerDirectorioDownload(), cantSeleccionado, new DialogInterface.OnMultiChoiceClickListener() {
+        builder.setMultiChoiceItems(obtenerDirectorioApp(), cantSeleccionado, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 
@@ -58,7 +60,8 @@ public class DialogEnviarEmail extends DialogFragment {
                         for (int i = 0; i < list.getCount(); i++) {
                             boolean checked = list.isItemChecked(i);
                             if (checked) {
-                                File carpeta = getActivity().getExternalFilesDir(getResources().getString(R.string.carpetaReporte));//Ruta relativa a la app
+                                //File carpeta = getActivity().getExternalFilesDir(getResources().getString(R.string.carpetaApp));//Ruta relativa a la app
+                                File carpeta=MainDirectorios.obtenerDirectorioApp(getActivity());
                                 //File ubicacionReporte = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                                 //File ruta = Environment.getExternalStorageDirectory();
                                 //String archivo = "Download/"+list.getItemAtPosition(i);
@@ -86,16 +89,17 @@ public class DialogEnviarEmail extends DialogFragment {
     }
 
 
-    private CharSequence[] obtenerDirectorioDownload(){
+    private CharSequence[] obtenerDirectorioApp(){
         List<String> list = new ArrayList<String>();
         //File ubicacionReporte = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File carpeta = getActivity().getExternalFilesDir(getResources().getString(R.string.carpetaReporte));//Ruta relativa a la app
+        File carpeta = getActivity().getExternalFilesDir(getResources().getString(R.string.directorio_app));//Ruta relativa a la app
+
         //File sdCardRoot = Environment.getExternalStorageDirectory();
         //File yourDir = new File(sdCardRoot, "Download");
-        for (File f : carpeta.listFiles()) {
+        for (File f : MainDirectorios.obtenerDirectorioApp(getActivity()).listFiles()) {
             if (f.isFile()) {
                 String name = f.getName();
-                Log.i("file names", name);
+                //Log.i("file names", name);
                 list.add(name);
             }
         }
@@ -107,7 +111,8 @@ public class DialogEnviarEmail extends DialogFragment {
 
 
     private void compartirPorEmail(List<String> archivosAdjuntos){
-        Inventario inventario= Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+       IInventario iInventario=new SqliteInventario();
+       Inventario inventario=iInventario.obtenerInventario();
 
         String numeroEquipo="";
         if(inventario.getNumequipo()<10){
@@ -117,11 +122,10 @@ public class DialogEnviarEmail extends DialogFragment {
         }
         String cuerpoMje="";
         String titulo=getResources().getString(R.string.mensaje);
-        String archivoOrigen="INV-"+inventario.getEmpresa().getCodempresa()+"-"+inventario.getNuminventario()+"-"+inventario.getNumequipo();
+        String archivoOrigen="INV-"+inventario.getEmpresa().getCodempresa()+"-"+inventario.getNuminventario()+"-"+numeroEquipo;
         String fechaInicio=inventario.getFechaCreacion();
         String fechaCierre=inventario.getFechaCierre();
-        cuerpoMje=titulo+"\n"+"Archivo Origen: "+archivoOrigen+"\n"+"Fecha Inicio: "+fechaInicio+"\n"+"Fecha Cierre: "+fechaCierre;
-
+        cuerpoMje=titulo+"\n"+"Archivo Origen: "+archivoOrigen+"\n"+"Fecha de inicio: "+fechaInicio+"\n"+"Fecha de cierre: "+fechaCierre;
 
         final Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         String[] para= getResources().getStringArray(R.array.para);
@@ -144,11 +148,11 @@ public class DialogEnviarEmail extends DialogFragment {
             Uri uri = Uri.fromFile(fileIn);
             uris.add(uri);
         }
-
-
-        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-        startActivity(Intent.createChooser(emailIntent,  getResources().getString(R.string.tituloApss)));
-
+        if(!uris.isEmpty()){
+            emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            startActivity(Intent.createChooser(emailIntent,  getResources().getString(R.string.compartir)));
+        }else{
+            Toast.makeText(getActivity(), "Error. Debes seleccionar almenos 1 reporte para enviar.", Toast.LENGTH_SHORT).show();
+        }
     }
-
 }

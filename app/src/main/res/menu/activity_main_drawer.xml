@@ -21,10 +21,10 @@
             android:title="Registrar Producto" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Opciones">
         <menu>
             <item
-                android:id="@+id/nav_iniciarSesion"
+                android:id="@+id/nav_manual"
                 android:icon="@drawable/ic_menu_import_contacts"
                 android:title="Manual de Usuario" />
             <item

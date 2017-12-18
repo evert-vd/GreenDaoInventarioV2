@@ -4,7 +4,8 @@
     android:id="@+id/activity_producto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.evertvd.greendaoinventario.vista.activitys.ProductoInv">
+    android:transitionName="@string/transition_string"
+    tools:context="com.evertvd.greendaoinventario.vista.activitys.ActivityProducto">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listadoProductos"

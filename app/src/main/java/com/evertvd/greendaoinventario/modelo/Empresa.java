@@ -167,7 +167,7 @@ public class Empresa {
 
     @Override
     public String toString() {
-        return empresa;
+        return empresa.toString();
     }
     // KEEP METHODS END
 

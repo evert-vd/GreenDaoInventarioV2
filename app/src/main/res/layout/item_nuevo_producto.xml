@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_nuevo_producto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    swipe:leftEdgeSwipeOffset="0dp"
+    swipe:rightEdgeSwipeOffset="0dp">
+
+    <LinearLayout
+        android:id="@+id/layoutDerecha"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <ImageButton
+            android:id="@+id/btnEditar"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_menu_create"
+            android:tint="@color/colorWhite"
+            android:background="@color/colorGreen"
+            android:gravity="center"
+            android:text="Edit"
+            />
+
+    </LinearLayout>
+
+    <!-- Another Bottom View For Left to Right -->
+
+    <LinearLayout
+        android:id="@+id/layoutEliminar"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <ImageButton
+            android:id="@+id/btnEliminar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="@color/colorRed"
+            android:src="@drawable/ic_menu_delete"
+            android:tint="@color/colorWhite"/>
+    </LinearLayout>
+
+    <!-- Top View,  Row itemView of RecyclerView -->
+
+    <!-- Top View,  Row itemView of RecyclerView -->
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:padding="3dp"
+         android:orientation="vertical">
+
+         <RelativeLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginBottom="2dp">
+
+             <TextView
+                 android:text="Código: "
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_centerVertical="true"
+                 android:layout_alignParentLeft="true"
+                 android:layout_alignParentStart="true"
+                 android:layout_marginLeft="12dp"
+                 android:layout_marginStart="12dp"
+                 android:id="@+id/lblCodigo1" />
+
+             <TextView
+                 android:text="Codigo"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentTop="true"
+                 android:layout_toRightOf="@+id/lblCodigo1"
+                 android:layout_toEndOf="@+id/lblCodigo1"
+                 android:id="@+id/lblCodigo2" />
+
+             <TextView
+                 android:text="Zona"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentTop="true"
+                 android:layout_alignParentRight="true"
+                 android:layout_alignParentEnd="true"
+                 android:layout_marginRight="78dp"
+                 android:layout_marginEnd="78dp"
+                 android:id="@+id/lblZona1" />
+
+             <TextView
+                 android:text="Zona"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentTop="true"
+                 android:layout_alignParentRight="true"
+                 android:layout_alignParentEnd="true"
+                 android:layout_marginRight="10dp"
+                 android:layout_marginEnd="10dp"
+                 android:id="@+id/lblZona2" />
+         </RelativeLayout>
+
+
+
+         <TextView
+             android:id="@+id/lblDesripcion2"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="12dp"
+             android:text="Descripcion"
+             android:textSize="18sp" />
+
+         <RelativeLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginBottom="2dp">
+
+             <TextView
+                 android:text="Unidades: "
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_centerVertical="true"
+                 android:layout_alignParentLeft="true"
+                 android:layout_alignParentStart="true"
+                 android:layout_marginLeft="12dp"
+                 android:layout_marginStart="12dp"
+                 android:id="@+id/lblCantidad1" />
+
+             <TextView
+                 android:text="Unidades"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentTop="true"
+                 android:layout_toRightOf="@+id/lblCantidad1"
+                 android:layout_toEndOf="@+id/lblCantidad1"
+                 android:id="@+id/unidades2" />
+
+
+
+             <TextView
+                 android:text=""
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentTop="true"
+                 android:layout_alignParentRight="true"
+                 android:layout_alignParentEnd="true"
+                 android:layout_marginRight="10dp"
+                 android:layout_marginEnd="10dp"
+                 android:id="@+id/lblFechaRegistro" />
+         </RelativeLayout>
+
+     </LinearLayout>
+
+</com.daimajia.swipe.SwipeLayout>
+

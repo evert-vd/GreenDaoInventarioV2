@@ -1,13 +1,20 @@
 package com.evertvd.greendaoinventario.modelo.dao;
 
+import java.util.List;
+import java.util.ArrayList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import org.greenrobot.greendao.AbstractDao;
 import org.greenrobot.greendao.Property;
+import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
+
+import com.evertvd.greendaoinventario.modelo.Inventario;
 
 import com.evertvd.greendaoinventario.modelo.Zona;
 
@@ -26,12 +33,13 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Nombre = new Property(1, String.class, "nombre", false, "NOMBRE");
-        public final static Property Diferencia = new Property(2, Integer.class, "diferencia", false, "DIFERENCIA");
-        public final static Property Estado = new Property(3, Integer.class, "estado", false, "ESTADO");
+        public final static Property Estado = new Property(2, Integer.class, "estado", false, "ESTADO");
+        public final static Property Inventario_id = new Property(3, Long.class, "inventario_id", false, "INVENTARIO_ID");
     }
 
     private DaoSession daoSession;
 
+    private Query<Zona> inventario_ZonaListQuery;
 
     public ZonaDao(DaoConfig config) {
         super(config);
@@ -48,8 +56,11 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"ZONA\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"NOMBRE\" TEXT UNIQUE ," + // 1: nombre
-                "\"DIFERENCIA\" INTEGER," + // 2: diferencia
-                "\"ESTADO\" INTEGER);"); // 3: estado
+                "\"ESTADO\" INTEGER," + // 2: estado
+                "\"INVENTARIO_ID\" INTEGER);"); // 3: inventario_id
+        // Add Indexes
+        db.execSQL("CREATE INDEX " + constraint + "IDX_ZONA_INVENTARIO_ID ON ZONA" +
+                " (\"INVENTARIO_ID\");");
     }
 
     /** Drops the underlying database table. */
@@ -72,14 +83,14 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
             stmt.bindString(2, nombre);
         }
  
-        Integer diferencia = entity.getDiferencia();
-        if (diferencia != null) {
-            stmt.bindLong(3, diferencia);
-        }
- 
         Integer estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindLong(4, estado);
+            stmt.bindLong(3, estado);
+        }
+ 
+        Long inventario_id = entity.getInventario_id();
+        if (inventario_id != null) {
+            stmt.bindLong(4, inventario_id);
         }
     }
 
@@ -97,14 +108,14 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
             stmt.bindString(2, nombre);
         }
  
-        Integer diferencia = entity.getDiferencia();
-        if (diferencia != null) {
-            stmt.bindLong(3, diferencia);
-        }
- 
         Integer estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindLong(4, estado);
+            stmt.bindLong(3, estado);
+        }
+ 
+        Long inventario_id = entity.getInventario_id();
+        if (inventario_id != null) {
+            stmt.bindLong(4, inventario_id);
         }
     }
 
@@ -124,8 +135,8 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
         Zona entity = new Zona( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // nombre
-            cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2), // diferencia
-            cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3) // estado
+            cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2), // estado
+            cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3) // inventario_id
         );
         return entity;
     }
@@ -134,8 +145,8 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
     public void readEntity(Cursor cursor, Zona entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setNombre(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setDiferencia(cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2));
-        entity.setEstado(cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3));
+        entity.setEstado(cursor.isNull(offset + 2) ? null : cursor.getInt(offset + 2));
+        entity.setInventario_id(cursor.isNull(offset + 3) ? null : cursor.getLong(offset + 3));
      }
     
     @Override
@@ -163,4 +174,109 @@ public class ZonaDao extends AbstractDao<Zona, Long> {
         return true;
     }
     
+    /** Internal query to resolve the "zonaList" to-many relationship of Inventario. */
+    public List<Zona> _queryInventario_ZonaList(Long inventario_id) {
+        synchronized (this) {
+            if (inventario_ZonaListQuery == null) {
+                QueryBuilder<Zona> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.Inventario_id.eq(null));
+                inventario_ZonaListQuery = queryBuilder.build();
+            }
+        }
+        Query<Zona> query = inventario_ZonaListQuery.forCurrentThread();
+        query.setParameter(0, inventario_id);
+        return query.list();
+    }
+
+    private String selectDeep;
+
+    protected String getSelectDeep() {
+        if (selectDeep == null) {
+            StringBuilder builder = new StringBuilder("SELECT ");
+            SqlUtils.appendColumns(builder, "T", getAllColumns());
+            builder.append(',');
+            SqlUtils.appendColumns(builder, "T0", daoSession.getInventarioDao().getAllColumns());
+            builder.append(" FROM ZONA T");
+            builder.append(" LEFT JOIN INVENTARIO T0 ON T.\"INVENTARIO_ID\"=T0.\"_id\"");
+            builder.append(' ');
+            selectDeep = builder.toString();
+        }
+        return selectDeep;
+    }
+    
+    protected Zona loadCurrentDeep(Cursor cursor, boolean lock) {
+        Zona entity = loadCurrent(cursor, 0, lock);
+        int offset = getAllColumns().length;
+
+        Inventario inventario = loadCurrentOther(daoSession.getInventarioDao(), cursor, offset);
+        entity.setInventario(inventario);
+
+        return entity;    
+    }
+
+    public Zona loadDeep(Long key) {
+        assertSinglePk();
+        if (key == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder(getSelectDeep());
+        builder.append("WHERE ");
+        SqlUtils.appendColumnsEqValue(builder, "T", getPkColumns());
+        String sql = builder.toString();
+        
+        String[] keyArray = new String[] { key.toString() };
+        Cursor cursor = db.rawQuery(sql, keyArray);
+        
+        try {
+            boolean available = cursor.moveToFirst();
+            if (!available) {
+                return null;
+            } else if (!cursor.isLast()) {
+                throw new IllegalStateException("Expected unique result, but count was " + cursor.getCount());
+            }
+            return loadCurrentDeep(cursor, true);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+    /** Reads all available rows from the given cursor and returns a list of new ImageTO objects. */
+    public List<Zona> loadAllDeepFromCursor(Cursor cursor) {
+        int count = cursor.getCount();
+        List<Zona> list = new ArrayList<Zona>(count);
+        
+        if (cursor.moveToFirst()) {
+            if (identityScope != null) {
+                identityScope.lock();
+                identityScope.reserveRoom(count);
+            }
+            try {
+                do {
+                    list.add(loadCurrentDeep(cursor, false));
+                } while (cursor.moveToNext());
+            } finally {
+                if (identityScope != null) {
+                    identityScope.unlock();
+                }
+            }
+        }
+        return list;
+    }
+    
+    protected List<Zona> loadDeepAllAndCloseCursor(Cursor cursor) {
+        try {
+            return loadAllDeepFromCursor(cursor);
+        } finally {
+            cursor.close();
+        }
+    }
+    
+
+    /** A raw-style query where you can pass any WHERE clause and arguments. */
+    public List<Zona> queryDeep(String where, String... selectionArg) {
+        Cursor cursor = db.rawQuery(getSelectDeep() + where, selectionArg);
+        return loadDeepAllAndCloseCursor(cursor);
+    }
+ 
 }

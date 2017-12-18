@@ -1,41 +1,37 @@
 package com.evertvd.greendaoinventario.vista.dialogs;
 
 import android.app.Dialog;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-
-import com.daimajia.swipe.util.Attributes;
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
+import com.evertvd.greendaoinventario.interfaces.IInventario;
+import com.evertvd.greendaoinventario.interfaces.IProducto;
+import com.evertvd.greendaoinventario.interfaces.IZona;
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
-import com.evertvd.greendaoinventario.modelo.Zona_has_Inventario;
+import com.evertvd.greendaoinventario.modelo.Zona;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
-
-import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
-import com.evertvd.greendaoinventario.modelo.dao.Zona_has_InventarioDao;
-import com.evertvd.greendaoinventario.utils.Operaciones;
-import com.evertvd.greendaoinventario.vista.adapters.NuevoProductoAdapter;
-import com.evertvd.greendaoinventario.vista.fragments.FrmNuevoProducto;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteInventario;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteProducto;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteZona;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 
 /**
@@ -49,14 +45,17 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
     private TextInputLayout tilDescripcion, tilZona, tilCodigo;
     private Button btnAceptar, btnCancelar;
     private Spinner spinner;
-    private int ultimoId;
+    private int codigo;
     Inventario inventario;
     public DialogNuevoProducto() {
         //this.idProducto=idProducto;
     }
 
+    public interface InterfaceDialogNuevoProducto {
+        public void addNuevoProducto(Producto producto);
+    }
 
-    @NonNull
+        @NonNull
     @Override
     public Dialog onCreateDialog(Bundle bundle) {
        // this.idProducto=idProducto;
@@ -98,8 +97,10 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
         //Codigo asignado automaticamente al registro NN+(UltimoRegistro+1)
         inventario=Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
 
-        //ultimoId=iProducto.ultimoIdProducto(getActivity());
-        txtCodigo.setText("NN"+String.valueOf(Operaciones.codigoUltimoProducto(inventario.getId())).toString()+1);
+
+        IProducto iProducto=new SqliteProducto();
+        codigo=iProducto.ultimoProducto()+1;
+        txtCodigo.setText("NN"+String.valueOf(codigo));
         txtCodigo.setEnabled(false);
         //txtObservacion=(EditText)view.findViewById(R.id.campoObservacion);
 
@@ -113,22 +114,24 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
         lista.add(5);
         ArrayList<Integer> listaCopiada = new ArrayList<Integer>(lista);
         */
-        List<Zona_has_Inventario> zonaHasInventarioList1=new ArrayList<Zona_has_Inventario>();
-        Zona_has_Inventario zona_has_inventario=new Zona_has_Inventario();//creacion de un objeto almacenado en momoria
-        zona_has_inventario.setNombreZona("Seleccionar Zona");
-        zonaHasInventarioList1.add(zona_has_inventario);
+        IInventario iInventario=new SqliteInventario();
+        Inventario inventario=iInventario.obtenerInventario();
 
-        List<Zona_has_Inventario>zonaHasInventarioList2= Controller.getDaoSession().getZona_has_InventarioDao().queryBuilder()
-               .where(Zona_has_InventarioDao.Properties.Inventario_id2.eq(inventario.getId())).list();
+        Zona zona=new Zona();
+        zona.setNombre("Seleccionar Zona");
 
-       // zona_has_inventarioList=new ArrayList<>(zonaHasInventarioList1);
-        List<Zona_has_Inventario> zonaHasInventarioList3 = new ArrayList<Zona_has_Inventario>();//union de las listas 1 y 2
-        zonaHasInventarioList3.addAll(zonaHasInventarioList1);
-        zonaHasInventarioList3.addAll(zonaHasInventarioList2);
+        List<Zona>zonaList1=new ArrayList<>();
+        zonaList1.add(zona);
 
-        ArrayAdapter<Zona_has_Inventario> spinnerAdapter = new ArrayAdapter<Zona_has_Inventario>(getActivity(),android.R.layout.simple_spinner_dropdown_item, zonaHasInventarioList3);
-        spinner.setAdapter(spinnerAdapter);
-        //builder.setTitle(R.string.tituloZonas);
+        IZona iZona=new SqliteZona();
+        List<Zona>zonaList2=iZona.listarZona();
+
+        List<Zona>zonaList3=new ArrayList<>();
+        zonaList3.addAll(zonaList1);
+        zonaList3.addAll(zonaList2);
+
+        ArrayAdapter<Zona> adapter = new ArrayAdapter<Zona>(getActivity(), android.R.layout.simple_spinner_dropdown_item, zonaList3);
+        spinner.setAdapter(adapter);
         builder.setView(view);
         return builder.create();
 
@@ -139,28 +142,33 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
     public void onClick(View v) {
         if (v.getId()== R.id.btnAceptar){
             boolean descripcion=validaDescripcionLLanta(tilDescripcion.getEditText().getText().toString());
-            //Zona_has_Inventario zonaHasInventario=(Zona_has_Inventario)spinner.getSelectedItem();
-            boolean zona=validaZonaSeleccionada(spinner.getSelectedItemPosition());//debe guardar a partir de la psicion 1, 0=Seleccionar Zona
-            if (descripcion&&zona){
-                guardarDatos();
-                FragmentManager manager = getFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                //Paso 3: Crear un nuevo fragmento y añadirlo
-                FrmNuevoProducto frmNuevoProducto = new FrmNuevoProducto();
-                transaction.replace(R.id.contenedor, frmNuevoProducto);
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                transaction.commit();
-
+            Zona zona=(Zona) spinner.getSelectedItem();
+            boolean zonaSeleccionada=validaZonaSeleccionada(spinner.getSelectedItemPosition());//debe guardar a partir de la psicion 1, 0=Seleccionar Zona
+            if (descripcion&&zonaSeleccionada){
+                Producto producto=new Producto();
+                producto.setDescripcion(tilDescripcion.getEditText().getText().toString());
+                producto.setZona_id(zona.getId());
+                producto.setTipo("App");
+                producto.setEstado(1);
+                producto.setStock(0.00);
+                producto.setCodigo(codigo);
+                InterfaceDialogNuevoProducto filter = (InterfaceDialogNuevoProducto) getTargetFragment();
+                filter.addNuevoProducto(producto);
                 //guardarDatos();
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 this.dismiss();
                 //
             }
-            crearAdaptadorRecycler();
+           // crearAdaptadorRecycler();
 
         }else if(v.getId()== R.id.btnCancelar){
-
             this.dismiss();
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
+        //ocultar teclado
+
     }
 
     private boolean validaZonaSeleccionada(int id){
@@ -183,45 +191,4 @@ public class DialogNuevoProducto extends DialogFragment implements View.OnClickL
         return true;
     }
 
-    public void guardarDatos(){
-        String descripcion=tilDescripcion.getEditText().getText().toString().toUpperCase();
-        //String zona=spinner.getSelectedItem().toString();
-        Zona_has_Inventario zona_has_inventario=(Zona_has_Inventario)spinner.getSelectedItem();//obtener datos del objeto en el spinner
-
-        Producto producto=new Producto();
-        producto.setCodigo(Operaciones.codigoUltimoProducto(inventario.getId())+1);//ultimo+1
-        producto.setDescripcion(descripcion);
-        //producto.setCodigo(txtCodigo.getText().toString().toUpperCase());
-        producto.setStock(0.0);
-        producto.setTipo("aplicacion".toUpperCase());
-        producto.setEstado(-1);
-        producto.setInventario_id(inventario.getId());
-        producto.setZona_id(zona_has_inventario.getZona_id2());
-        Controller.getDaoSession().insert(producto);
-    }
-
-
-
-    public void crearAdaptadorRecycler(){
-
-        FragmentManager  fragmentManager=getFragmentManager();
-        Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-        List<Producto>productoList=Controller.getDaoSession().getProductoDao().queryBuilder().where(ProductoDao.Properties.Inventario_id.eq(inventario.getId()))
-                .where(ProductoDao.Properties.Tipo.notEq("Sistema")).list();//lista los productos agregados desde la app
-        RecyclerView mRecyclerView = (RecyclerView)getActivity().findViewById(R.id.recyclerview_registrar_nuevo_producto);
-        // Layout Managers:
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        NuevoProductoAdapter mAdapter = new NuevoProductoAdapter(getActivity(), productoList, fragmentManager);
-        ((NuevoProductoAdapter) mAdapter).setMode(Attributes.Mode.Single);
-        mRecyclerView.setAdapter(mAdapter);
-
-
-    }
-
-    /*
-    public static DialogRegistrarNuevoProducto newInstance() {
-        DialogRegistrarNuevoProducto f = new DialogRegistrarNuevoProducto();
-        return f;
-    }
-    */
 }

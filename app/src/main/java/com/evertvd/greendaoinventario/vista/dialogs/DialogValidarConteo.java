@@ -17,13 +17,14 @@ import android.widget.TextView;
 
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.controlador.Controller;
+import com.evertvd.greendaoinventario.interfaces.IConteo;
 import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
-import com.evertvd.greendaoinventario.vista.adapters.HistorialConteoAdapter;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteConteo;
 import com.evertvd.greendaoinventario.vista.adapters.ValidarConteoAdapter;
 
 import org.greenrobot.greendao.query.Join;
@@ -70,12 +71,14 @@ public class DialogValidarConteo extends DialogFragment implements View.OnClickL
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_validar_conteo, null);
 
-        QueryBuilder<Conteo> conteoQueryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0)).where(ConteoDao.Properties.Estado.notEq(-1));//por validar, no eliminado
+        /*QueryBuilder<Conteo> conteoQueryBuilder=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Validado.eq(0)).where(ConteoDao.Properties.Estado.notEq(-1));//por validar, no eliminado
         Join producto=conteoQueryBuilder.join(ConteoDao.Properties.Producto_id, Producto.class).where(ProductoDao.Properties.Estado.eq(-1));//con diferencia;
         Join inventario=conteoQueryBuilder.join(producto, ProductoDao.Properties.Inventario_id, Inventario.class,InventarioDao.Properties.Id);//inventario activado
         inventario.where(InventarioDao.Properties.Estado.eq(0));
         List<Conteo> conteoList=conteoQueryBuilder.list();
-
+        */
+        IConteo iConteo=new SqliteConteo();
+        List<Conteo>conteoList=iConteo.listarConteoPorValidar();
 
         ValidarConteoAdapter adapter = new ValidarConteoAdapter(getActivity(), conteoList);
 

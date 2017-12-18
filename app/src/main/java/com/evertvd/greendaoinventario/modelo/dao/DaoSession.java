@@ -11,7 +11,6 @@ import org.greenrobot.greendao.internal.DaoConfig;
 import com.evertvd.greendaoinventario.modelo.Empresa;
 import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Zona;
-import com.evertvd.greendaoinventario.modelo.Zona_has_Inventario;
 import com.evertvd.greendaoinventario.modelo.Producto;
 import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Historial;
@@ -19,7 +18,6 @@ import com.evertvd.greendaoinventario.modelo.Historial;
 import com.evertvd.greendaoinventario.modelo.dao.EmpresaDao;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
-import com.evertvd.greendaoinventario.modelo.dao.Zona_has_InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
 import com.evertvd.greendaoinventario.modelo.dao.HistorialDao;
@@ -36,7 +34,6 @@ public class DaoSession extends AbstractDaoSession {
     private final DaoConfig empresaDaoConfig;
     private final DaoConfig inventarioDaoConfig;
     private final DaoConfig zonaDaoConfig;
-    private final DaoConfig zona_has_InventarioDaoConfig;
     private final DaoConfig productoDaoConfig;
     private final DaoConfig conteoDaoConfig;
     private final DaoConfig historialDaoConfig;
@@ -44,7 +41,6 @@ public class DaoSession extends AbstractDaoSession {
     private final EmpresaDao empresaDao;
     private final InventarioDao inventarioDao;
     private final ZonaDao zonaDao;
-    private final Zona_has_InventarioDao zona_has_InventarioDao;
     private final ProductoDao productoDao;
     private final ConteoDao conteoDao;
     private final HistorialDao historialDao;
@@ -62,9 +58,6 @@ public class DaoSession extends AbstractDaoSession {
         zonaDaoConfig = daoConfigMap.get(ZonaDao.class).clone();
         zonaDaoConfig.initIdentityScope(type);
 
-        zona_has_InventarioDaoConfig = daoConfigMap.get(Zona_has_InventarioDao.class).clone();
-        zona_has_InventarioDaoConfig.initIdentityScope(type);
-
         productoDaoConfig = daoConfigMap.get(ProductoDao.class).clone();
         productoDaoConfig.initIdentityScope(type);
 
@@ -77,7 +70,6 @@ public class DaoSession extends AbstractDaoSession {
         empresaDao = new EmpresaDao(empresaDaoConfig, this);
         inventarioDao = new InventarioDao(inventarioDaoConfig, this);
         zonaDao = new ZonaDao(zonaDaoConfig, this);
-        zona_has_InventarioDao = new Zona_has_InventarioDao(zona_has_InventarioDaoConfig, this);
         productoDao = new ProductoDao(productoDaoConfig, this);
         conteoDao = new ConteoDao(conteoDaoConfig, this);
         historialDao = new HistorialDao(historialDaoConfig, this);
@@ -85,7 +77,6 @@ public class DaoSession extends AbstractDaoSession {
         registerDao(Empresa.class, empresaDao);
         registerDao(Inventario.class, inventarioDao);
         registerDao(Zona.class, zonaDao);
-        registerDao(Zona_has_Inventario.class, zona_has_InventarioDao);
         registerDao(Producto.class, productoDao);
         registerDao(Conteo.class, conteoDao);
         registerDao(Historial.class, historialDao);
@@ -95,7 +86,6 @@ public class DaoSession extends AbstractDaoSession {
         empresaDaoConfig.clearIdentityScope();
         inventarioDaoConfig.clearIdentityScope();
         zonaDaoConfig.clearIdentityScope();
-        zona_has_InventarioDaoConfig.clearIdentityScope();
         productoDaoConfig.clearIdentityScope();
         conteoDaoConfig.clearIdentityScope();
         historialDaoConfig.clearIdentityScope();
@@ -111,10 +101,6 @@ public class DaoSession extends AbstractDaoSession {
 
     public ZonaDao getZonaDao() {
         return zonaDao;
-    }
-
-    public Zona_has_InventarioDao getZona_has_InventarioDao() {
-        return zona_has_InventarioDao;
     }
 
     public ProductoDao getProductoDao() {

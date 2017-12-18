@@ -7,7 +7,6 @@ import com.evertvd.greendaoinventario.modelo.dao.DaoSession;
 import org.greenrobot.greendao.DaoException;
 
 import com.evertvd.greendaoinventario.modelo.dao.ConteoDao;
-import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
 
@@ -28,11 +27,7 @@ public class Producto {
     private String descripcion;
     private Double stock;
     private String tipo;
-    private Integer seleccionado;
     private Integer estado;
-
-    @Index
-    private Long inventario_id;
 
     @Index
     private Long zona_id;
@@ -44,12 +39,6 @@ public class Producto {
     /** Used for active entity operations. */
     @Generated
     private transient ProductoDao myDao;
-
-    @ToOne(joinProperty = "inventario_id")
-    private Inventario inventario;
-
-    @Generated
-    private transient Long inventario__resolvedKey;
 
     @ToOne(joinProperty = "zona_id")
     private Zona zona;
@@ -74,15 +63,13 @@ public class Producto {
     }
 
     @Generated
-    public Producto(Long id, Integer codigo, String descripcion, Double stock, String tipo, Integer seleccionado, Integer estado, Long inventario_id, Long zona_id) {
+    public Producto(Long id, Integer codigo, String descripcion, Double stock, String tipo, Integer estado, Long zona_id) {
         this.id = id;
         this.codigo = codigo;
         this.descripcion = descripcion;
         this.stock = stock;
         this.tipo = tipo;
-        this.seleccionado = seleccionado;
         this.estado = estado;
-        this.inventario_id = inventario_id;
         this.zona_id = zona_id;
     }
 
@@ -133,14 +120,6 @@ public class Producto {
         this.tipo = tipo;
     }
 
-    public Integer getSeleccionado() {
-        return seleccionado;
-    }
-
-    public void setSeleccionado(Integer seleccionado) {
-        this.seleccionado = seleccionado;
-    }
-
     public Integer getEstado() {
         return estado;
     }
@@ -149,45 +128,12 @@ public class Producto {
         this.estado = estado;
     }
 
-    public Long getInventario_id() {
-        return inventario_id;
-    }
-
-    public void setInventario_id(Long inventario_id) {
-        this.inventario_id = inventario_id;
-    }
-
     public Long getZona_id() {
         return zona_id;
     }
 
     public void setZona_id(Long zona_id) {
         this.zona_id = zona_id;
-    }
-
-    /** To-one relationship, resolved on first access. */
-    @Generated
-    public Inventario getInventario() {
-        Long __key = this.inventario_id;
-        if (inventario__resolvedKey == null || !inventario__resolvedKey.equals(__key)) {
-            __throwIfDetached();
-            InventarioDao targetDao = daoSession.getInventarioDao();
-            Inventario inventarioNew = targetDao.load(__key);
-            synchronized (this) {
-                inventario = inventarioNew;
-            	inventario__resolvedKey = __key;
-            }
-        }
-        return inventario;
-    }
-
-    @Generated
-    public void setInventario(Inventario inventario) {
-        synchronized (this) {
-            this.inventario = inventario;
-            inventario_id = inventario == null ? null : inventario.getId();
-            inventario__resolvedKey = inventario_id;
-        }
     }
 
     /** To-one relationship, resolved on first access. */

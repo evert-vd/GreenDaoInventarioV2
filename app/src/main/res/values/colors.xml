@@ -19,5 +19,7 @@
     <color name="colorGreyLighten_3">#EEEEEE</color>
     <color name="colorGreyDarken_2">#616161</color>
     <color name="colorGreyLighten_1">#bdbdbd</color>
+    <color name="grey_darken_4">#212121</color>
+    <color name="black">#000000</color>
 
 </resources>

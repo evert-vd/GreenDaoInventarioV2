@@ -1,39 +1,55 @@
 package com.evertvd.greendaoinventario.vista.activitys;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.evertvd.greendaoinventario.R;
+import com.evertvd.greendaoinventario.interfaces.IProducto;
+import com.evertvd.greendaoinventario.modelo.Zona;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteEmpresa;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteInventario;
 import com.evertvd.greendaoinventario.controlador.Controller;
+import com.evertvd.greendaoinventario.interfaces.IEmpresa;
+import com.evertvd.greendaoinventario.interfaces.IInventario;
+import com.evertvd.greendaoinventario.modelo.Conteo;
 import com.evertvd.greendaoinventario.modelo.Empresa;
+import com.evertvd.greendaoinventario.modelo.Historial;
 import com.evertvd.greendaoinventario.modelo.Inventario;
-import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
+import com.evertvd.greendaoinventario.modelo.Producto;
+import com.evertvd.greendaoinventario.sqlitedao.SqliteProducto;
+import com.evertvd.greendaoinventario.utils.MainDirectorios;
+import com.evertvd.greendaoinventario.utils.Utils;
+import com.evertvd.greendaoinventario.vista.adapters.ProductoAdapter;
+import com.evertvd.greendaoinventario.vista.fragments.FragmentZonas;
+import com.evertvd.greendaoinventario.vista.fragments.FrmContainerResumen;
 import com.evertvd.greendaoinventario.vista.fragments.FrmNuevoProducto;
-import com.evertvd.greendaoinventario.vista.fragments.FrmResumen;
-import com.evertvd.greendaoinventario.vista.fragments.FrmZonasDiferencia;
-import com.evertvd.greendaoinventario.vista.fragments.FrmZonasInventario;
 
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -41,48 +57,47 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    //private FragmentManager fragmentManager;
-    //private Fragment fragment = null;
-
-
     private MenuItem menuDiferencia, menuInventario, menuResumen, menuNuevoProducto;
     private Menu menuNav;
     private Inventario inventario;
     private TextView txtNumEquipo, txtNumInventario;
-
+    NavigationView navigationView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*Slide slideOut=new Slide(Gravity.LEFT);
+        slideOut.setDuration(500);
+        slideOut.setInterpolator(new DecelerateInterpolator());
+
+        Slide slide=new Slide(Gravity.RIGHT);
+        slide.setDuration(500);
+        slide.setInterpolator(new DecelerateInterpolator());
+
+        getWindow().setEnterTransition(slide);
+        getWindow().setReturnTransition(slideOut);
+        getWindow().setAllowEnterTransitionOverlap(false);*/
+
         setContentView(R.layout.activity_main);
-
-        List<Inventario> inventarioList = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).list();
-        //long idUltimoInventario=0;
-        if (inventarioList.size() > 1) {
-            //cierra todos los inventarios menos el ultimo
-            for (int i = 0; i < inventarioList.size() - 1; i++) {
-                Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Id.eq(inventarioList.get(i).getId())).unique();
-                inventario.setEstado(1);
-                inventario.update();
-
-            }
+        IEmpresa iEmpresa=new SqliteEmpresa();
+        List<Empresa>empresaList=iEmpresa.listarEmpresa();
+        if(empresaList.isEmpty()){
+            cargarEmpresas();
         }
-
-        inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
-
+        MainDirectorios.crearDirectorioApp(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         menuNav = navigationView.getMenu();
         menuInventario = menuNav.findItem(R.id.nav_inventario);
@@ -90,66 +105,60 @@ public class MainActivity extends AppCompatActivity
         menuNuevoProducto=menuNav.findItem(R.id.nav_nuevo_Producto);
         menuResumen = menuNav.findItem(R.id.nav_resumen);
 
+
+
         //Forma de acceder al titulo del header
         View header = navigationView.getHeaderView(0);
         txtNumInventario = (TextView) header.findViewById(R.id.txtNumInventario);
         txtNumEquipo = (TextView) header.findViewById(R.id.txtNumEquipo);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-*/
-
-        //fragmentManager = getSupportFragmentManager();
-        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        //fragment = new LibraryFragment();
-        //fragmentTransaction.replace(R.id.main_container_wrapper, fragment);
-        //fragmentTransaction.commit();
 
 
-        //verificar..esta devolviendo dos valores
-
-
-
-        if (inventario != null) {
-            txtNumInventario.setText("INV-" + inventario.getEmpresa().getCodempresa() + "-" + inventario.getNuminventario() + "-" + inventario.getNumequipo());
-            if (inventario.getNumequipo() < 10) {
-                txtNumEquipo.setText("0" + String.valueOf(inventario.getNumequipo()));
-            } else {
+        IInventario iInventario = new SqliteInventario();
+        inventario = iInventario.obtenerInventario();
+        if(inventario!=null){
+            txtNumInventario.setText("Inventario Nro "+String.valueOf(inventario.getNuminventario()));
+            if(inventario.getNumequipo()<10){
+                txtNumEquipo.setText("0"+String.valueOf(inventario.getNumequipo()));
+            }else{
                 txtNumEquipo.setText(String.valueOf(inventario.getNumequipo()));
             }
-
-        }
-
-        if (inventario != null) {
             abrirContexto();
+        }else{
+            //Inventario inventario2=iInventario.obtenerInventarioCerrado();
 
-        } else {
-            List<Empresa> empresaList = Controller.getDaoSession().getEmpresaDao().loadAll();
-            if (empresaList.isEmpty()) {
-                agregarEmpresas();
-            }
-
-
+            finishAfterTransition();
             startActivity(new Intent(this, Login.class));
+
+            //Log.e("TAG", String.valueOf(inventario2.getContexto()));
+            /*if(inventario2!=null){
+                abrirContexto();
+            }else{
+                finish();
+                startActivity(new Intent(this, Login2.class));
+            }*/
         }
     }
+
+    private void cargarEmpresas() {
+        Empresa empresa=new Empresa();
+        empresa.setEmpresa("Comercio");
+        empresa.setCodempresa(2);
+        empresa.setEstado(0);
+        IEmpresa iEmpresa=new SqliteEmpresa();
+        iEmpresa.agregarEmpresa(empresa);
+
+    }
+
+
     //metodo sobreescrito que actualiza la cantidad al volver desde el activity detalle
-    @Override
+    /*@Override
     public void onRestart() {
         super.onRestart();
         finish();
         startActivity(getIntent());
         //inicializarRecycler();
-    }
-
-
+    }*/
 
 
     @Override
@@ -159,27 +168,30 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
            super.onBackPressed();
-            finish();
-            startActivity(new Intent(this,MainActivity.class));
+           //abrirContexto();
+            //finish();
+            //finishAfterTransition();
+            //startActivity(new Intent(this,MainActivity.class));
         }
     }
-/*
-    @Override
+    /*
+
+     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-
-        if (inventario==null || inventario.getContexto()==1){
+        if (inventario==null || inventario.getContexto()==0){
             getMenuInflater().inflate(R.menu.toolbar_inventario, menu);
-        }else if(inventario.getContexto()==2){
+        }else if(inventario.getContexto()==1){
             getMenuInflater().inflate(R.menu.toolbar_diferencia, menu);
         }else{
             getMenuInflater().inflate(R.menu.toolbar_principal, menu);
         }
-
        getMenuInflater().inflate(R.menu.toolbar_principal, menu);
         return true;
-    }
-/*
+    }*/
+
+
+    /*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -189,8 +201,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_inventario) {
-            FragmentManager fragmentManager=getSupportFragmentManager();
-            DialogCierreInventario dialogCierreInventario = new DialogCierreInventario();
+            FragmentManager fragmentManager=getFragmentManager();
+            DialogoCierreInventario dialogCierreInventario = new DialogoCierreInventario();
             dialogCierreInventario.setCancelable(false);
             dialogCierreInventario.show(fragmentManager, "dialogo cerrar inventario");
 
@@ -198,69 +210,34 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-    */
+    }*/
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         //Fragment fragment=null;
         switch (id) {
             case R.id.nav_inventario:
-                //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                FrmZonasInventario frmZonasInventario = new FrmZonasInventario();
-                fragmentTransaction.replace(R.id.contenedor, frmZonasInventario);
-                fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                setTitle("Inventario "+inventario.getNuminventario());
-                fragmentTransaction.commit();
-                //fragment = new FrmZonasInventario();
+                String titulo=item.getTitle().toString();
+                abrirContextoInventario(fragmentTransaction);
                 break;
-
-            // } else if (id == R.id.nav_diferencias) {
             case R.id.nav_diferencias:
-                //FragmentManager fragmentManager = getFragmentManager();
-                //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
-                fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
-                fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                setTitle("Diferencias Inv. "+inventario.getNuminventario());
-                fragmentTransaction.commit();
-                //fragment = new FrmZonasDiferencia();
+                abrirContextoInventario(fragmentTransaction);
                 break;
-
-            //} else if (id == R.id.nav_resumen) {
             case R.id.nav_resumen:
-
-                FrmResumen frmResumen = new FrmResumen();
-                fragmentTransaction.replace(R.id.contenedor, frmResumen);
-                fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                setTitle("Resumen Inv. "+inventario.getNuminventario());
-                fragmentTransaction.commit();
-                //fragment = new FrmResumen();
+                abrirContextoResumen(fragmentTransaction);
                 break;
-
             case R.id.nav_nuevo_Producto:
-
-                FrmNuevoProducto listarNuevo = new FrmNuevoProducto();
-                //Reemplazar el fragment actual por el nuevo fragment
-                fragmentTransaction.replace(R.id.contenedor, listarNuevo);
-                //Animacion al abrir el nuevo fragment
-                 fragmentTransaction.setTransition(fragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                setTitle("Registrar Producto");
-                //Regresa al fragment anterior con la tecla atras
-                //transaction.addToBackStack(null);
-                //getSupportActionBar().setTitle(menuItem.getTitle());
-                fragmentTransaction.commit();
-                //fragment = new FrmNuevoProducto();
+                abrirContextoNuevoProducto(fragmentTransaction);
                 break;
 
-
-            case R.id.nav_iniciarSesion:
+            case R.id.nav_manual:
+                abrirPdf();
                 break;
             case R.id.nav_cerrarSesion:
                 mensajeConfirmacionCierre();
@@ -268,79 +245,68 @@ public class MainActivity extends AppCompatActivity
             default:
                 finish();
                 startActivity(new Intent(this, Login.class));
-
                 break;
-
-
         }
-
-
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-
-
         return true;
     }
 
-    private void abrirContexto() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if (inventario.getContexto() == 1) {
-            menuInventario.setChecked(true);
-            menuDiferencia.setEnabled(false);
-            menuResumen.setEnabled(false);
-            abrirContextoInventario(fragmentTransaction);
 
-        } else if (inventario.getContexto() == 2) {
-            menuDiferencia.setChecked(true);
-            menuDiferencia.setEnabled(true);
-            menuInventario.setEnabled(false);
-            menuResumen.setEnabled(false);
-            abrirContextoDiferencias(fragmentTransaction);
-        } else if (inventario.getContexto() == 3) {
-            menuResumen.setChecked(true);
-            menuDiferencia.setEnabled(true);
-            menuDiferencia.setEnabled(false);
-            menuInventario.setEnabled(false);
-            menuNuevoProducto.setEnabled(false);
-            abrirContextoResumen(fragmentTransaction);
+    private void abrirPdf() {
+        Utils.copyRawToSDCard(R.raw.manual_usuario, Environment.getExternalStorageDirectory() + "/manual_usuario.pdf", this);
+        File pdfFile = new File(Environment.getExternalStorageDirectory(), "/manual_usuario.pdf");//File path
+        if (pdfFile.exists()) { //Revisa si el archivo existe!
+            Uri path = Uri.fromFile(pdfFile);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            //define el tipo de archivo
+            intent.setDataAndType(path, "application/pdf");
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            //Inicia pdf viewer
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+            }
         } else {
-            finish();
-            startActivity(new Intent(this, Login.class));
-
+            Toast.makeText(getApplicationContext(), "El archivo manual.pdf no existe o tiene otro nombre...! ", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void abrirContextoInventario(FragmentTransaction fragmentTransaction ) {
-        //FragmentManager fragmentManager = getFragmentManager();
-        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack
-        FrmZonasInventario fragment = new FrmZonasInventario();
-        fragmentTransaction.replace(R.id.contenedor, fragment);
-        setTitle("Inventario "+inventario.getNuminventario());
-        fragmentTransaction.commit();
+    private void abrirContexto() {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            if (inventario.getContexto() == 0|| inventario.getContexto()==1) {
+                abrirContextoInventario(fragmentTransaction);
 
+            } else if (inventario.getContexto() == 2) {
+                navigationView.setCheckedItem(R.id.nav_resumen);
+                menuNav.getItem(2).setEnabled(true);
+                menuNav.getItem(0).setEnabled(false);
+                menuNav.getItem(1).setEnabled(false);
+                menuNav.getItem(3).setEnabled(false);
+                abrirContextoResumen(fragmentTransaction);
+            }
     }
 
-    private void abrirContextoDiferencias(FragmentTransaction fragmentTransaction) {
-        //FragmentManager fragmentManager = getFragmentManager();
-        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+    private void abrirContextoInventario(FragmentTransaction fragmentTransaction) {
 
-            FrmZonasDiferencia frmZonasDiferencia = new FrmZonasDiferencia();
-            fragmentTransaction.replace(R.id.contenedor, frmZonasDiferencia);
-            setTitle("Diferencias Inv. "+inventario.getNuminventario());
-            fragmentTransaction.commit();
-
-
+        FragmentZonas fragmentZonas = new FragmentZonas();
+        fragmentTransaction.replace(R.id.contenedor, fragmentZonas);
+        fragmentTransaction.commit();
     }
 
     private void abrirContextoResumen(FragmentTransaction fragmentTransaction) {
-                  FrmResumen frmResumen = new FrmResumen();
-            fragmentTransaction.replace(R.id.contenedor, frmResumen);
-        setTitle("Resumen Inv. "+inventario.getNuminventario());
-            fragmentTransaction.commit();
+        FrmContainerResumen frmContainerResumen = new FrmContainerResumen();
+        fragmentTransaction.replace(R.id.contenedor, frmContainerResumen);
+        setTitle("Resumen Invent. "+inventario.getNuminventario());
+        fragmentTransaction.commit();
+    }
 
+    private void abrirContextoNuevoProducto(FragmentTransaction fragmentTransaction) {
+        FrmNuevoProducto frmNuevoProducto = new FrmNuevoProducto();
+        fragmentTransaction.replace(R.id.contenedor, frmNuevoProducto);
+        setTitle("Nuevo producto");
+        fragmentTransaction.commit();
     }
 
     private void agregarEmpresas() {
@@ -383,10 +349,19 @@ public class MainActivity extends AppCompatActivity
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
+                                //Inventario inventario = Controller.getDaoSession().getInventarioDao().queryBuilder().where(InventarioDao.Properties.Estado.eq(0)).unique();
                                 //Log.e("Inventario actual", String.valueOf(inventario.getId()));
-                                Controller.getDaoSession().getInventarioDao().delete(inventario);
+                                //Controller.getDaoSession().getInventarioDao().delete(inventario);
+                                Controller.getDaoSession().deleteAll(Inventario.class);
+                                //Controller.getDaoSession().deleteAll(Empresa.class);
+                                Controller.getDaoSession().deleteAll(Zona.class);
+                                Controller.getDaoSession().deleteAll(Producto.class);
+                                Controller.getDaoSession().deleteAll(Conteo.class);
+                                Controller.getDaoSession().deleteAll(Historial.class);
+
+
                                 startActivity(new Intent(getApplicationContext(), Login.class));
+                                finish();//para que no se guarde en la pila
                             }
                         });
         AlertDialog alertDialog = confirmar.create();
@@ -396,9 +371,7 @@ public class MainActivity extends AppCompatActivity
         if(cancel != null)
             //b.setBackgroundColor(Color.CYAN);
             cancel.setTextColor(getResources().getColor(R.color.colorGreyDarken_2));//color por código al boton cancelar del fialogo
-
     }
-
 
 
 }

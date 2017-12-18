@@ -27,7 +27,7 @@ public class Generator {
     }
 
     private static void crearSchema(){
-        int schemaVersion = 2;   // incrementar en cada nueva actualización del esquema.
+        int schemaVersion = 4;   // incrementar en cada nueva actualización del esquema.
         String dataPackage = "com.evertvd.greendaoinventario.modelo";   // ruta donde almacenar las clases-entidades.
 
 
@@ -92,23 +92,17 @@ public class Generator {
         inventario.addStringProperty("fechaCreacion");
         inventario.addStringProperty("fechaCierre");
         inventario.addIntProperty("estado");//0:abierto, 1:cerrado
-        inventario.addIntProperty("contexto");//1 inventario, 2: diferencia, 3: resumen 0: terminado
+        inventario.addIntProperty("contexto");//0 inventario, 1: diferencia, 2: resumen 0: terminado
         Property empresaId = inventario.addLongProperty("empresa_id").index().getProperty();// clave foránea
 
 
         Entity zona = schema.addEntity("Zona");
         zona.addIdProperty().primaryKey().autoincrement();
         zona.addStringProperty("nombre").unique();
-        zona.addIntProperty("diferencia");
-        zona.addIntProperty("estado");//1:seleccionado, 0:Deseleccionado
-        //Property inventarioId = zona.addLongProperty("inventario_id").index().getProperty();   // clave foránea
+        zona.addIntProperty("estado");//1:con diferencia, 0:sin diferencia
+        Property inventarioId = zona.addLongProperty("inventario_id").index().getProperty();   // clave foránea
         //Property inventarioEmpresaId = inventario.addLongProperty("inventario_empresa_id").index().getProperty();
 
-        Entity zonaInventario=schema.addEntity("Zona_has_Inventario");
-        //zona.addIdProperty().primaryKey().autoincrement();
-        zonaInventario.addStringProperty("nombreZona");
-        Property inventarioId2 = zonaInventario.addLongProperty("inventario_id2").index().getProperty();   // clave foránea
-        Property zonaId2 = zonaInventario.addLongProperty("zona_id2").index().getProperty();   // clave foránea
 
 
         Entity producto = schema.addEntity("Producto");
@@ -117,9 +111,8 @@ public class Generator {
         producto.addStringProperty("descripcion");
         producto.addDoubleProperty("stock");
         producto.addStringProperty("tipo");//origen del dato:sistema, app
-        producto.addIntProperty("seleccionado");//1:seleccionado, 0:Deseleccionado
         producto.addIntProperty("estado");//-1:diferencia;abierto, 0:sin diferencia:cerrado
-        Property inventarioId = producto.addLongProperty("inventario_id").index().getProperty();   // clave foránea
+        //Property inventarioId = producto.addLongProperty("inventario_id").index().getProperty();   // clave foránea
         Property zonaId = producto.addLongProperty("zona_id").index().getProperty();   // clave foránea
         //Property zonaInventarioId = producto.addLongProperty("zona_inventario_id").index().getProperty();   // clave foránea
         //Property zonaInventarioEmpresaId = producto.addLongProperty("zona_inventario_empresa_id").index().getProperty();   // clave foránea
@@ -163,25 +156,20 @@ public class Generator {
         zona.addToMany(inventarioZona, zonaId);
        */
 
-        zonaInventario.addToOne(inventario, inventarioId2);
-        inventario.addToMany(zonaInventario, inventarioId2);
-        zonaInventario.addToOne(zona, zonaId2);
-        zona.addToMany(zonaInventario, zonaId2);
-
-        inventario.addToOne(empresa, empresaId);
         empresa.addToMany(inventario, empresaId);
+        inventario.addToOne(empresa, empresaId);
 
-        producto.addToOne(inventario, inventarioId);
-        inventario.addToMany(producto, inventarioId);
+        inventario.addToMany(zona, inventarioId);
+        zona.addToOne(inventario, inventarioId);
 
-        producto.addToOne(zona, zonaId);
         zona.addToMany(producto, zonaId);
+        producto.addToOne(zona, zonaId);
 
-        conteo.addToOne(producto, productoId);
         producto.addToMany(conteo, productoId);
+        conteo.addToOne(producto, productoId);
 
-        historial.addToOne(conteo, conteoId);
         conteo.addToMany(historial, conteoId);
+        historial.addToOne(conteo, conteoId);
 
 
     }

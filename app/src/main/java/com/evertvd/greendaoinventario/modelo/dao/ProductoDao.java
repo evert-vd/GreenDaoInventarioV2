@@ -14,7 +14,6 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import com.evertvd.greendaoinventario.modelo.Inventario;
 import com.evertvd.greendaoinventario.modelo.Zona;
 
 import com.evertvd.greendaoinventario.modelo.Producto;
@@ -37,15 +36,12 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
         public final static Property Descripcion = new Property(2, String.class, "descripcion", false, "DESCRIPCION");
         public final static Property Stock = new Property(3, Double.class, "stock", false, "STOCK");
         public final static Property Tipo = new Property(4, String.class, "tipo", false, "TIPO");
-        public final static Property Seleccionado = new Property(5, Integer.class, "seleccionado", false, "SELECCIONADO");
-        public final static Property Estado = new Property(6, Integer.class, "estado", false, "ESTADO");
-        public final static Property Inventario_id = new Property(7, Long.class, "inventario_id", false, "INVENTARIO_ID");
-        public final static Property Zona_id = new Property(8, Long.class, "zona_id", false, "ZONA_ID");
+        public final static Property Estado = new Property(5, Integer.class, "estado", false, "ESTADO");
+        public final static Property Zona_id = new Property(6, Long.class, "zona_id", false, "ZONA_ID");
     }
 
     private DaoSession daoSession;
 
-    private Query<Producto> inventario_ProductoListQuery;
     private Query<Producto> zona_ProductoListQuery;
 
     public ProductoDao(DaoConfig config) {
@@ -66,13 +62,9 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
                 "\"DESCRIPCION\" TEXT," + // 2: descripcion
                 "\"STOCK\" REAL," + // 3: stock
                 "\"TIPO\" TEXT," + // 4: tipo
-                "\"SELECCIONADO\" INTEGER," + // 5: seleccionado
-                "\"ESTADO\" INTEGER," + // 6: estado
-                "\"INVENTARIO_ID\" INTEGER," + // 7: inventario_id
-                "\"ZONA_ID\" INTEGER);"); // 8: zona_id
+                "\"ESTADO\" INTEGER," + // 5: estado
+                "\"ZONA_ID\" INTEGER);"); // 6: zona_id
         // Add Indexes
-        db.execSQL("CREATE INDEX " + constraint + "IDX_PRODUCTO_INVENTARIO_ID ON PRODUCTO" +
-                " (\"INVENTARIO_ID\");");
         db.execSQL("CREATE INDEX " + constraint + "IDX_PRODUCTO_ZONA_ID ON PRODUCTO" +
                 " (\"ZONA_ID\");");
     }
@@ -112,24 +104,14 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
             stmt.bindString(5, tipo);
         }
  
-        Integer seleccionado = entity.getSeleccionado();
-        if (seleccionado != null) {
-            stmt.bindLong(6, seleccionado);
-        }
- 
         Integer estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindLong(7, estado);
-        }
- 
-        Long inventario_id = entity.getInventario_id();
-        if (inventario_id != null) {
-            stmt.bindLong(8, inventario_id);
+            stmt.bindLong(6, estado);
         }
  
         Long zona_id = entity.getZona_id();
         if (zona_id != null) {
-            stmt.bindLong(9, zona_id);
+            stmt.bindLong(7, zona_id);
         }
     }
 
@@ -162,24 +144,14 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
             stmt.bindString(5, tipo);
         }
  
-        Integer seleccionado = entity.getSeleccionado();
-        if (seleccionado != null) {
-            stmt.bindLong(6, seleccionado);
-        }
- 
         Integer estado = entity.getEstado();
         if (estado != null) {
-            stmt.bindLong(7, estado);
-        }
- 
-        Long inventario_id = entity.getInventario_id();
-        if (inventario_id != null) {
-            stmt.bindLong(8, inventario_id);
+            stmt.bindLong(6, estado);
         }
  
         Long zona_id = entity.getZona_id();
         if (zona_id != null) {
-            stmt.bindLong(9, zona_id);
+            stmt.bindLong(7, zona_id);
         }
     }
 
@@ -202,10 +174,8 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // descripcion
             cursor.isNull(offset + 3) ? null : cursor.getDouble(offset + 3), // stock
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // tipo
-            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // seleccionado
-            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // estado
-            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // inventario_id
-            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8) // zona_id
+            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // estado
+            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6) // zona_id
         );
         return entity;
     }
@@ -217,10 +187,8 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
         entity.setDescripcion(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setStock(cursor.isNull(offset + 3) ? null : cursor.getDouble(offset + 3));
         entity.setTipo(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setSeleccionado(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
-        entity.setEstado(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
-        entity.setInventario_id(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
-        entity.setZona_id(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
+        entity.setEstado(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
+        entity.setZona_id(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
      }
     
     @Override
@@ -248,20 +216,6 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "productoList" to-many relationship of Inventario. */
-    public List<Producto> _queryInventario_ProductoList(Long inventario_id) {
-        synchronized (this) {
-            if (inventario_ProductoListQuery == null) {
-                QueryBuilder<Producto> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.Inventario_id.eq(null));
-                inventario_ProductoListQuery = queryBuilder.build();
-            }
-        }
-        Query<Producto> query = inventario_ProductoListQuery.forCurrentThread();
-        query.setParameter(0, inventario_id);
-        return query.list();
-    }
-
     /** Internal query to resolve the "productoList" to-many relationship of Zona. */
     public List<Producto> _queryZona_ProductoList(Long zona_id) {
         synchronized (this) {
@@ -283,12 +237,9 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
             StringBuilder builder = new StringBuilder("SELECT ");
             SqlUtils.appendColumns(builder, "T", getAllColumns());
             builder.append(',');
-            SqlUtils.appendColumns(builder, "T0", daoSession.getInventarioDao().getAllColumns());
-            builder.append(',');
-            SqlUtils.appendColumns(builder, "T1", daoSession.getZonaDao().getAllColumns());
+            SqlUtils.appendColumns(builder, "T0", daoSession.getZonaDao().getAllColumns());
             builder.append(" FROM PRODUCTO T");
-            builder.append(" LEFT JOIN INVENTARIO T0 ON T.\"INVENTARIO_ID\"=T0.\"_id\"");
-            builder.append(" LEFT JOIN ZONA T1 ON T.\"ZONA_ID\"=T1.\"_id\"");
+            builder.append(" LEFT JOIN ZONA T0 ON T.\"ZONA_ID\"=T0.\"_id\"");
             builder.append(' ');
             selectDeep = builder.toString();
         }
@@ -298,10 +249,6 @@ public class ProductoDao extends AbstractDao<Producto, Long> {
     protected Producto loadCurrentDeep(Cursor cursor, boolean lock) {
         Producto entity = loadCurrent(cursor, 0, lock);
         int offset = getAllColumns().length;
-
-        Inventario inventario = loadCurrentOther(daoSession.getInventarioDao(), cursor, offset);
-        entity.setInventario(inventario);
-        offset += daoSession.getInventarioDao().getAllColumns().length;
 
         Zona zona = loadCurrentOther(daoSession.getZonaDao(), cursor, offset);
         entity.setZona(zona);

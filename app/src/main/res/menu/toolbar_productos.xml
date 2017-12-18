@@ -12,13 +12,4 @@
         app:itemIconTint="#FFFFFF"
         android:title="Buscar" />
 
-    <!--
-    <item android:id="@+id/action_qr"
-        android:title=""
-        android:icon="@drawable/ic_action_qr"
-        android:orderInCategory="100"
-        app:showAsAction="always" />
--->
-
-
 </menu>

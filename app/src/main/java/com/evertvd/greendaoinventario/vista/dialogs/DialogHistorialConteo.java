@@ -39,7 +39,6 @@ public class DialogHistorialConteo extends DialogFragment implements View.OnClic
         }
 
     public static DialogHistorialConteo newInstance(int num) {
-
         DialogHistorialConteo dialogFragment = new DialogHistorialConteo();
         Bundle bundle = new Bundle();
         bundle.putInt("num", num);
@@ -81,7 +80,7 @@ public class DialogHistorialConteo extends DialogFragment implements View.OnClic
         txtConteoActual=(TextView)v.findViewById(R.id.txtConteoActual);
 
         Conteo conteo=Controller.getDaoSession().getConteoDao().queryBuilder().where(ConteoDao.Properties.Id.eq(idconteo)).unique();
-        txtConteoActual.setText("Conteo Actual:"+String.valueOf(conteo.getCantidad()));
+        txtConteoActual.setText("Conteo actual: "+String.valueOf(conteo.getCantidad())+" Und.");
         //lista de objetos
 
         List<Historial> historialList= Controller.getDaoSession().getHistorialDao().queryBuilder().where(HistorialDao.Properties.Conteo_id.eq(idconteo)).list();

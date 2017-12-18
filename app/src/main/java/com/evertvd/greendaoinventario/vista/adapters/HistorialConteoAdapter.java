@@ -60,7 +60,7 @@ public class HistorialConteoAdapter extends BaseAdapter {
         View v = convertView;
         if (convertView == null) {
             LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inf.inflate(R.layout.adapter_historial, null);
+            v = inf.inflate(R.layout.item_historial, null);
         }
 
         for (int i=0; i<historialList.size(); i++){
@@ -87,7 +87,6 @@ public class HistorialConteoAdapter extends BaseAdapter {
         }else{
             estado.setText("Modificado");
         }
-
         return v;
     }
 

@@ -13,86 +13,33 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvSinRegistros"
+            android:id="@+id/txtSinRegistros"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="20sp"
-            android:textColor="@color/colorPrimary"
-            android:text="Sin productos registrados"
-            />
+            android:text="Sin productos registrados"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview_registrar_nuevo_producto"
+            android:id="@+id/recyclerview_nuevo_producto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"/>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnAddNuevo"
+            android:id="@+id/btnNuevoProducto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_gravity="end|right"
             app:useCompatPadding="true"
-            android:src="@drawable/ic_menu_add"
             android:tint="@color/colorWhite"
-            app:borderWidth="0dp"
-            app:elevation="6dp"/>
+            android:src="@drawable/ic_menu_add" />
 
-        <!--
-         app:backgroundTint="@color/blue_darken_4"
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/btnAddPruebas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            app:useCompatPadding="true"
 
-            android:src="@drawable/ic_action_add"
-            app:backgroundTint="@color/amber_darken_4"
-            app:borderWidth="0dp"
-            app:elevation="6dp"/>
-            -->
 
     </RelativeLayout>
-    <!--
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical">
-
-   <android.support.v7.widget.RecyclerView
-       android:id="@+id/my_recycler_view2"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-
-       android:layout_alignParentTop="true" />
-
-   </LinearLayout>
-
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical">
-
-       <android.support.design.widget.FloatingActionButton
-           android:id="@+id/btnAddNuevo"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignParentBottom="true"
-           android:layout_alignParentRight="true"
-           android:layout_alignParentEnd="true"
-           app:useCompatPadding="true"
-
-           android:src="@drawable/ic_action_add"
-           app:backgroundTint="@color/amber_darken_4"
-           app:borderWidth="0dp"
-           app:elevation="6dp"/>
-
-   </LinearLayout>
--->
 
 </FrameLayout>

@@ -10,6 +10,7 @@ import com.evertvd.greendaoinventario.modelo.dao.HistorialDao;
 import com.evertvd.greendaoinventario.modelo.dao.InventarioDao;
 import com.evertvd.greendaoinventario.modelo.dao.ProductoDao;
 import com.evertvd.greendaoinventario.modelo.dao.ZonaDao;
+import com.evertvd.greendaoinventario.utils.MainDirectorios;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -40,6 +41,9 @@ public class Controller extends Application {
         productoDao = daoSession.getProductoDao();
         conteoDao = daoSession.getConteoDao();
         historialDao = daoSession.getHistorialDao();
+
+        //crear carpeta
+
 
         ///// Using the below lines of code we can toggle ENCRYPTED to true or false in other to use either an encrypted database or not.
 //      DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, ENCRYPTED ? "users-db-encrypted" : "users-db");

@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.evertvd.greendaoinventario.R;
 import com.evertvd.greendaoinventario.modelo.Conteo;
-import com.evertvd.greendaoinventario.modelo.Historial;
 
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class ValidarConteoAdapter extends BaseAdapter {
         View v = convertView;
         if (convertView == null) {
             LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inf.inflate(R.layout.adapter_validar_conteo, null);
+            v = inf.inflate(R.layout.item_validar_conteo, null);
         }
 
         for (int i=0; i<conteoList.size(); i++){
@@ -71,8 +70,11 @@ public class ValidarConteoAdapter extends BaseAdapter {
         Conteo conteo = conteoList.get(position);
 
         TextView codigo = (TextView) v.findViewById(R.id.txtCodigo);
-        codigo.setText(String.valueOf(conteo.getProducto().getCodigo()));
-
+        if (conteo.getProducto().getTipo().equalsIgnoreCase("App")){
+           codigo.setText(String.valueOf("NN"+conteo.getProducto().getCodigo()));
+        }else{
+            codigo.setText(String.valueOf(conteo.getProducto().getCodigo()));
+        }
         TextView description = (TextView) v.findViewById(R.id.txtZona);
         description.setText(conteo.getProducto().getZona().getNombre());
 
